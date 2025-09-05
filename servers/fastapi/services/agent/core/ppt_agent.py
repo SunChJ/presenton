@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 
 from .agent_response import AgentResponse, StreamingAgentResponse
 from .ppt_executor import PPTExecutor
-from ..memory.conversation_memory import ConversationMemory
+from ..memory.memory_manager import get_conversation_memory
 from ..intent.recognizer import IntentRecognizer
 from ..conversation.manager import ConversationManager
 from ..intent.intent_types import IntentType
@@ -13,7 +13,7 @@ class PPTAgent:
     """PPT Agent core class"""
     
     def __init__(self):
-        self.memory = ConversationMemory()
+        self.memory = None  # Will be initialized in initialize()
         self.intent_recognizer = IntentRecognizer()
         self.conversation_manager = ConversationManager()
         self.executor = PPTExecutor()
@@ -133,6 +133,8 @@ class PPTAgent:
         
     async def initialize(self):
         """Initialize agent components"""
-        # Agent components are already initialized in __init__
-        # This method is reserved for future use (e.g., loading models)
-        pass
+        # Initialize memory backend (Redis or in-memory fallback)
+        if self.memory is None:
+            self.memory = await get_conversation_memory()
+        
+        # Agent components are ready

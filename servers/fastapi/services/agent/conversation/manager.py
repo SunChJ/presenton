@@ -68,7 +68,7 @@ class ConversationManager:
             follow_up = await self._get_follow_up_question(intent.type, missing_params[0])
             return AgentResponse(
                 text=f"好的，我来帮您创建演示文稿。{follow_up}",
-                intent=intent.type.value,
+                intent=intent.type,
                 action_required=False,
                 follow_up_question=follow_up,
                 extracted_params=params,
@@ -78,7 +78,7 @@ class ConversationManager:
         # All parameters available, ready to create
         return AgentResponse(
             text=f"太好了！我将为您创建一个关于'{params['topic']}'的{params['n_slides']}页演示文稿。",
-            intent=intent.type.value,
+            intent=intent.type,
             action_required=True,
             follow_up_question=None,
             extracted_params=params,
@@ -91,7 +91,7 @@ class ConversationManager:
         """Handle slide modification intent"""
         return AgentResponse(
             text="我可以帮您修改演示文稿。请告诉我具体要修改哪一页的什么内容？",
-            intent=intent.type.value,
+            intent=intent.type,
             action_required=False,
             follow_up_question="您想修改第几页的什么内容？",
             extracted_params=intent.parameters,
@@ -104,7 +104,7 @@ class ConversationManager:
         """Handle content addition intent"""
         return AgentResponse(
             text="我可以帮您添加内容到演示文稿中。",
-            intent=intent.type.value,
+            intent=intent.type,
             action_required=False,
             follow_up_question="您想添加什么类型的内容？",
             extracted_params=intent.parameters,
@@ -117,7 +117,7 @@ class ConversationManager:
         """Handle presentation export intent"""
         return AgentResponse(
             text="我可以帮您导出演示文稿。",
-            intent=intent.type.value,
+            intent=intent.type,
             action_required=True,
             follow_up_question="您希望导出为什么格式？",
             extracted_params=intent.parameters,
@@ -130,7 +130,7 @@ class ConversationManager:
         """Handle general questions"""
         return AgentResponse(
             text="我是您的PPT助手，可以帮您创建、修改和导出演示文稿。您有什么具体需要我帮忙的吗？",
-            intent=intent.type.value,
+            intent=intent.type,
             action_required=False,
             follow_up_question="您需要我帮您做什么？",
             extracted_params=intent.parameters,
@@ -143,7 +143,7 @@ class ConversationManager:
         """Handle unknown intents"""
         return AgentResponse(
             text="抱歉，我没有完全理解您的意思。我可以帮您创建演示文稿、修改内容、添加元素或导出文件。",
-            intent=intent.type.value,
+            intent=intent.type,
             action_required=False,
             follow_up_question="您希望我帮您做什么？",
             extracted_params=intent.parameters,

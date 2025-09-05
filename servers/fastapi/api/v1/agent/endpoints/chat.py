@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.responses import StreamingResponse
 from services.agent.core.ppt_agent import PPTAgent
 from ..models import ChatRequest, ChatResponse
 
@@ -44,4 +45,40 @@ async def agent_chat(
         raise HTTPException(
             status_code=500,
             detail=f"Error processing chat message: {str(e)}"
+        )
+
+
+@AGENT_CHAT_ROUTER.post("/stream")
+async def agent_chat_stream(
+    request: ChatRequest,
+    agent: PPTAgent = Depends(get_agent_instance)
+):
+    """Chat with PPT Agent (streaming response like GPTs)"""
+    try:
+        # Process message with streaming agent
+        streaming_response = await agent.process_message_streaming(
+            message=request.message,
+            session_id=request.session_id
+        )
+        
+        # Create streaming response
+        async def generate_stream():
+            async for chunk in streaming_response.stream_response():
+                # Format as SSE (Server-Sent Events) 
+                yield f"data: {chunk}\n\n"
+            yield "data: [DONE]\n\n"
+        
+        return StreamingResponse(
+            generate_stream(),
+            media_type="text/plain",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive"
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing streaming chat message: {str(e)}"
         )

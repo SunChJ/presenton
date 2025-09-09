@@ -1,0 +1,193 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PPT Generator API",
+    "description": "AI-powered presentation generator that creates professional PowerPoint presentations from natural language descriptions",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://ppt.samsoncj.xyz"
+    }
+  ],
+  "paths": {
+    "/api/v1/ppt/agent/chat/": {
+      "post": {
+        "operationId": "chatWithPPTAgent",
+        "summary": "Create or modify presentations with natural language",
+        "description": "Primary interface for creating, modifying, and managing PowerPoint presentations. Supports both creation and modification requests in natural language.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Natural language request for presentation creation or modification",
+                    "examples": [
+                      "创建一个关于人工智能发展的10页PPT",
+                      "Create a 8-slide presentation about climate change",
+                      "修改第3页的标题为'核心技术'",
+                      "Add more details to slide 5"
+                    ]
+                  },
+                  "session_id": {
+                    "type": "string",
+                    "description": "Unique session identifier to maintain conversation context",
+                    "default": "gpt_session"
+                  }
+                },
+                "required": ["message"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Agent response with action results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "response": {
+                      "type": "string",
+                      "description": "Human-readable response from the agent"
+                    },
+                    "intent": {
+                      "type": "string",
+                      "description": "Detected intent (CREATE_PRESENTATION, MODIFY_SLIDE, etc.)",
+                      "examples": ["CREATE_PRESENTATION", "MODIFY_SLIDE", "EXPORT_PRESENTATION"]
+                    },
+                    "action_required": {
+                      "type": "boolean",
+                      "description": "Whether an action will be performed"
+                    },
+                    "presentation_id": {
+                      "type": "string",
+                      "description": "ID of the created or modified presentation"
+                    },
+                    "file_path": {
+                      "type": "string",
+                      "description": "Download path for the generated presentation file"
+                    },
+                    "edit_url": {
+                      "type": "string",
+                      "description": "URL for editing the presentation online"
+                    },
+                    "follow_up_question": {
+                      "type": "string",
+                      "description": "Follow-up question if more information is needed"
+                    }
+                  },
+                  "required": ["response"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ppt/presentation/generate": {
+      "post": {
+        "operationId": "generatePresentation",
+        "summary": "Generate presentation with specific parameters",
+        "description": "Generate a complete PowerPoint presentation with detailed control over parameters. Use when you have specific requirements for slides, template, or format.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "Topic or detailed description of the presentation content",
+                    "examples": [
+                      "Introduction to Machine Learning for beginners",
+                      "Company quarterly financial results Q3 2024",
+                      "Marketing strategy for new product launch"
+                    ]
+                  },
+                  "n_slides": {
+                    "type": "integer",
+                    "description": "Number of slides to generate",
+                    "minimum": 3,
+                    "maximum": 20,
+                    "default": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Presentation language",
+                    "enum": ["Chinese", "English"],
+                    "default": "English"
+                  },
+                  "template": {
+                    "type": "string",
+                    "description": "Visual template style",
+                    "enum": ["classic", "general", "modern", "professional"],
+                    "default": "general"
+                  },
+                  "instructions": {
+                    "type": "string",
+                    "description": "Additional instructions for presentation generation",
+                    "examples": ["Make it professional", "Include data visualizations", "Focus on practical examples"]
+                  },
+                  "tone": {
+                    "type": "string",
+                    "description": "Tone of the presentation",
+                    "examples": ["professional", "casual", "academic", "friendly"]
+                  },
+                  "export_as": {
+                    "type": "string",
+                    "description": "Export format",
+                    "enum": ["pptx", "pdf"],
+                    "default": "pptx"
+                  }
+                },
+                "required": ["content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully generated presentation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "presentation_id": {
+                      "type": "string",
+                      "description": "Unique identifier for the presentation"
+                    },
+                    "download_path": {
+                      "type": "string",
+                      "description": "Direct download URL for the presentation file"
+                    },
+                    "edit_url": {
+                      "type": "string",
+                      "description": "URL for online editing"
+                    },
+                    "slides_count": {
+                      "type": "integer",
+                      "description": "Number of slides created"
+                    },
+                    "template_used": {
+                      "type": "string",
+                      "description": "Template that was applied"
+                    }
+                  },
+                  "required": ["presentation_id", "download_path"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

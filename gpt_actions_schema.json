@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
     "title": "Presenton PPT Agent API",
     "description": "AI-powered presentation generator with natural language interface",
@@ -7,12 +7,8 @@
   },
   "servers": [
     {
-      "url": "http://ppt.samsoncj.xyz:8080",
+      "url": "https://ppt.samsoncj.xyz",
       "description": "Production server via FRP"
-    },
-    {
-      "url": "http://localhost:8000",
-      "description": "Local development server"
     }
   ],
   "paths": {

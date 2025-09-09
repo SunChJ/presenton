@@ -12,6 +12,12 @@ NC='\033[0m'
 
 echo -e "${YELLOW}🎨 启动Next.js前端服务（Conda环境）...${NC}"
 
+# 引入端口清理工具
+source ./check_and_kill_port.sh
+
+# 清理3001端口
+check_and_kill_port 3001 "Next.js前端服务"
+
 # 检查conda环境
 if ! conda env list | grep -q "^presenton "; then
     echo -e "${RED}❌ presenton conda环境不存在，请先运行: ./setup_conda_env.sh${NC}"

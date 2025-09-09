@@ -5,23 +5,17 @@ const nextConfig = {
   
   // Disable SWC minification for compatibility
   swcMinify: false,
+  
+  // Allow cross-origin requests for development
+  allowedDevOrigins: ["ppt.samsoncj.xyz"],
 
-  // Rewrites for development - proxy API requests and font requests to FastAPI backend
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:8000/api/:path*',
-      },
-      {
-        source: '/app_data/fonts/:path*',
-        destination: 'http://localhost:8000/app_data/fonts/:path*',
-      },
-    ];
-  },
 
   images: {
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ppt.samsoncj.xyz",
+      },
       {
         protocol: "https",
         hostname: "pub-7c765f3726084c52bcd5d180d51f1255.r2.dev",

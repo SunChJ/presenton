@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import random
+import uuid
 from typing import Annotated, List, Optional
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -49,6 +50,8 @@ from utils.process_slides import (
 )
 import uuid
 
+# Default user ID for systems without user management
+DEFAULT_USER_ID = uuid.UUID('00000000-0000-0000-0000-000000000000')
 
 PRESENTATION_ROUTER = APIRouter(prefix="/presentation", tags=["Presentation"])
 
@@ -67,6 +70,7 @@ async def get_presentation(
     )
     return PresentationWithSlides(
         **presentation.model_dump(),
+        user=DEFAULT_USER_ID,
         slides=slides,
     )
 
@@ -98,6 +102,7 @@ async def get_all_presentations(sql_session: AsyncSession = Depends(get_async_se
             return None
         return PresentationWithSlides(
             **presentation.model_dump(),
+            user=DEFAULT_USER_ID,
             slides=[first_slide],
         )
 
@@ -282,6 +287,7 @@ async def stream_presentation(
 
         response = PresentationWithSlides(
             **presentation.model_dump(),
+            user=DEFAULT_USER_ID,
             slides=slides,
         )
 
@@ -329,6 +335,7 @@ async def update_presentation(
 
     return PresentationWithSlides(
         **presentation.model_dump(),
+        user=DEFAULT_USER_ID,
         slides=slides or [],
     )
 

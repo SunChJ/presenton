@@ -35,14 +35,27 @@ async def process_slide_and_fetch_assets(
             ICON_FINDER_SERVICE.search_icons(__icon_query__parent["__icon_query__"])
         )
 
-    results = await asyncio.gather(*async_tasks)
-    results.reverse()
+    # Use return_exceptions=True to prevent one failed task from breaking the entire flow
+    try:
+        results = await asyncio.gather(*async_tasks, return_exceptions=True)
+        results.reverse()
+    except Exception as e:
+        print(f"Error in process_slide_and_fetch_assets: {e}")
+        # Return empty list if all tasks fail
+        return []
 
     return_assets = []
     for image_path in image_paths:
+        if not results:
+            break
         image_dict = get_dict_at_path(slide.content, image_path)
         result = results.pop()
-        if isinstance(result, ImageAsset):
+        
+        # Handle exceptions in individual tasks
+        if isinstance(result, Exception):
+            print(f"Image generation failed for path {image_path}: {result}")
+            image_dict["__image_url__"] = "/static/images/placeholder.jpg"
+        elif isinstance(result, ImageAsset):
             return_assets.append(result)
             image_dict["__image_url__"] = result.path
         else:
@@ -50,8 +63,17 @@ async def process_slide_and_fetch_assets(
         set_dict_at_path(slide.content, image_path, image_dict)
 
     for icon_path in icon_paths:
+        if not results:
+            break
         icon_dict = get_dict_at_path(slide.content, icon_path)
-        icon_dict["__icon_url__"] = results.pop()[0]
+        result = results.pop()
+        
+        # Handle exceptions in individual tasks
+        if isinstance(result, Exception):
+            print(f"Icon search failed for path {icon_path}: {result}")
+            icon_dict["__icon_url__"] = "/static/icons/placeholder.png"
+        else:
+            icon_dict["__icon_url__"] = result[0] if result else "/static/icons/placeholder.png"
         set_dict_at_path(slide.content, icon_path, icon_dict)
 
     return return_assets

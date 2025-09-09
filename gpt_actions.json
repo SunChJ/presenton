@@ -1,0 +1,97 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PPT Generator - Working Version",
+    "description": "AI-powered PowerPoint presentation generator",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://ppt.samsoncj.xyz"
+    }
+  ],
+  "paths": {
+    "/api/v1/ppt/presentation/generate": {
+      "post": {
+        "operationId": "generatePresentation",
+        "summary": "Generate PowerPoint presentation",
+        "description": "Create a complete presentation from topic description. When user requests a presentation, generate an outline first, then confirm before creating the final presentation with download and edit links.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "Detailed description of the presentation topic and structure. Include number of slides and outline in the content."
+                  },
+                  "n_slides": {
+                    "type": "integer",
+                    "default": 8,
+                    "minimum": 3,
+                    "maximum": 20,
+                    "description": "Number of slides to generate"
+                  },
+                  "language": {
+                    "type": "string",
+                    "default": "Chinese",
+                    "enum": ["English", "Chinese"],
+                    "description": "Presentation language"
+                  },
+                  "template": {
+                    "type": "string",
+                    "default": "basic",
+                    "description": "Template name (use basic as default)"
+                  },
+                  "export_as": {
+                    "type": "string",
+                    "default": "pptx",
+                    "enum": ["pptx", "pdf"],
+                    "description": "Export format"
+                  },
+                  "tone": {
+                    "type": "string",
+                    "description": "Presentation tone (professional, casual, academic, etc.)"
+                  },
+                  "instructions": {
+                    "type": "string",
+                    "description": "Additional instructions for content generation"
+                  }
+                },
+                "required": ["content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Presentation created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "presentation_id": {
+                      "type": "string",
+                      "description": "Unique presentation identifier"
+                    },
+                    "path": {
+                      "type": "string",
+                      "description": "Download URL for the presentation file"
+                    },
+                    "edit_path": {
+                      "type": "string",
+                      "description": "URL for online editing (add domain prefix: https://ppt.samsoncj.xyz)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

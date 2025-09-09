@@ -35,6 +35,10 @@ set -a
 source .env.local
 set +a
 
+# 配置用户配置文件路径
+export USER_CONFIG_PATH="${PWD}/app_data/userConfig.json"
+echo -e "${YELLOW}📄 用户配置文件路径: $USER_CONFIG_PATH${NC}"
+
 # 确保在项目根目录
 cd "$(dirname "$0")"
 

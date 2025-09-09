@@ -37,6 +37,10 @@ set -a
 source .env.local 
 set +a
 
+# 配置用户配置文件路径（前端也需要这个路径）
+export USER_CONFIG_PATH="${PWD}/app_data/userConfig.json"
+echo -e "${YELLOW}📄 用户配置文件路径: $USER_CONFIG_PATH${NC}"
+
 # 检查并安装前端依赖
 if [ ! -d "servers/nextjs/node_modules" ]; then
     echo -e "${YELLOW}📦 安装Node.js依赖...${NC}"

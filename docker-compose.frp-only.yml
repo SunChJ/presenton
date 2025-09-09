@@ -1,0 +1,14 @@
+services:
+  frp:
+    image: snowdreamtech/frpc:latest
+    container_name: presenton-frp
+    restart: unless-stopped
+    volumes:
+      - ./frp/frpc.ini:/etc/frp/frpc.ini:ro
+    environment:
+      - VPS_IP=${VPS_IP:-93.179.115.189}
+      - FRP_TOKEN=${FRP_TOKEN:-jwt_99527_scj}
+      - DOMAIN=${DOMAIN:-ppt.samsoncj.xyz}
+    command: ["/usr/bin/frpc", "-c", "/etc/frp/frpc.ini"]
+    env_file:
+      - frp/.env

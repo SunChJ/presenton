@@ -17,14 +17,14 @@ class IconFinderService:
 
     def _initialize_icons_collection(self):
         self.embedding_function = ONNXMiniLM_L6_V2()
-        self.embedding_function.DOWNLOAD_PATH = "chroma/models"
+        self.embedding_function.DOWNLOAD_PATH = "servers/fastapi/chroma/models"
         self.embedding_function._download_model_if_not_exists()
         try:
             self.collection = self.client.get_collection(
                 self.collection_name, embedding_function=self.embedding_function
             )
         except Exception:
-            with open("assets/icons.json", "r") as f:
+            with open("servers/fastapi/assets/icons.json", "r") as f:
                 icons = json.load(f)
 
             documents = []

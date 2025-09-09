@@ -3,10 +3,16 @@ const nextConfig = {
   reactStrictMode: false,
   distDir: ".next-build",
   
+  // Disable SWC minification for compatibility
+  swcMinify: false,
 
-  // Rewrites for development - proxy font requests to FastAPI backend
+  // Rewrites for development - proxy API requests and font requests to FastAPI backend
   async rewrites() {
     return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:8000/api/:path*',
+      },
       {
         source: '/app_data/fonts/:path*',
         destination: 'http://localhost:8000/app_data/fonts/:path*',

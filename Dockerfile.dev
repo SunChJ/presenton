@@ -1,12 +1,28 @@
 FROM python:3.11-slim-bookworm
 
-# Install Node.js and npm
-RUN apt-get update && apt-get install -y \
+# Accept proxy settings as build arguments
+ARG HTTP_PROXY
+ARG HTTPS_PROXY  
+ARG NO_PROXY
+
+# Set proxy environment variables if provided
+ENV HTTP_PROXY=${HTTP_PROXY}
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+ENV NO_PROXY=${NO_PROXY}
+
+# Configure APT to use faster mirrors and optimize
+RUN echo 'Acquire::HTTP::Pipeline-Depth "0";' > /etc/apt/apt.conf.d/99nopipelining \
+    && echo 'Acquire::HTTP::No-Cache "true";' >> /etc/apt/apt.conf.d/99nopipelining \
+    && echo 'Acquire::BrokenProxy "true";' >> /etc/apt/apt.conf.d/99nopipelining
+
+# Install Node.js and npm with optimized package installation
+RUN apt-get update && apt-get install -y --no-install-recommends \
   nginx \
   curl \
   libreoffice \
   fontconfig \
-  imagemagick
+  imagemagick \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml
 
@@ -15,30 +31,48 @@ RUN sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /e
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
   apt-get install -y nodejs
 
-
 # Change working directory
 WORKDIR /app
-
-RUN ls -a
 
 # Set environment variables
 ENV APP_DATA_DIRECTORY=/app_data
 ENV TEMP_DIRECTORY=/tmp/presenton
 # ENV PYTHONPATH="${PYTHONPATH}:/app/servers/fastapi"
 
-# Install ollama
-RUN curl -fsSL http://ollama.com/install.sh | sh
+# Configure npm to use faster registry
+RUN npm config set registry https://registry.npmmirror.com/
 
-# Install dependencies for FastAPI
-RUN pip install aiohttp aiomysql aiosqlite asyncpg fastapi[standard] \
-  pathvalidate pdfplumber chromadb sqlmodel \
-  anthropic google-genai openai fastmcp
-RUN pip install docling --extra-index-url https://download.pytorch.org/whl/cpu
+# Install ollama (using HTTPS)
+RUN curl -fsSL https://ollama.com/install.sh | sh
 
-# Install dependencies for Next.js
+# Configure pip to use faster index
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/ && \
+    pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn
+
+# Install dependencies for FastAPI in batches to optimize caching
+RUN pip install --no-cache-dir aiohttp aiomysql aiosqlite asyncpg && \
+    pip install --no-cache-dir fastapi[standard] pathvalidate pdfplumber && \
+    pip install --no-cache-dir chromadb sqlmodel anthropic google-genai openai fastmcp
+
+# Install docling separately due to special index
+RUN pip install --no-cache-dir docling --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Install dependencies for Next.js with optimizations
 WORKDIR /node_dependencies
 COPY servers/nextjs/package.json servers/nextjs/package-lock.json ./
-RUN npm install --verbose
+
+# Use npm ci for faster, reliable, reproducible builds
+RUN npm ci --silent --production=false
+
+# Install platform-specific SWC binaries (only glibc versions for Debian)
+RUN ARCH=$(uname -m) && \
+    echo "Detected architecture: $ARCH, libc: glibc" && \
+    echo "Installing compatible SWC binaries..." && \
+    if [ "$ARCH" = "x86_64" ]; then \
+        npm install @next/swc-linux-x64-gnu || echo "x64 SWC install failed, will use fallback"; \
+    elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then \
+        npm install @next/swc-linux-arm64-gnu || echo "ARM64 SWC install failed, will use fallback"; \
+    fi
 
 # Install chrome for puppeteer
 RUN npx puppeteer browsers install chrome@138.0.7204.94 --install-deps

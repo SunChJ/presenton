@@ -1,0 +1,24 @@
+name: presenton
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - nodejs=20
+  - pip
+  - pip:
+    - aiohttp
+    - aiomysql
+    - aiosqlite
+    - asyncpg
+    - fastapi[standard]
+    - pathvalidate
+    - pdfplumber
+    - chromadb
+    - sqlmodel
+    - anthropic
+    - google-generativeai
+    - openai
+    - fastmcp
+    - docling
+    - uvicorn[standard]

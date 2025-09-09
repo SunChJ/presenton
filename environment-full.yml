@@ -1,0 +1,50 @@
+name: presenton
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Python 环境
+  - python=3.11
+  
+  # Node.js 环境
+  - nodejs=20
+  
+  # 基础工具
+  - pip
+  - curl
+  - git
+  
+  # Python 依赖通过pip安装
+  - pip:
+    # FastAPI 核心
+    - fastapi[standard]
+    - uvicorn[standard]
+    
+    # 数据库相关
+    - sqlmodel
+    - sqlalchemy[asyncio]
+    - aiohttp
+    - aiomysql
+    - aiosqlite
+    - asyncpg
+    - greenlet
+    
+    # AI/LLM 相关
+    - anthropic
+    - google-genai
+    - openai
+    - fastmcp
+    
+    # 文档处理
+    - pathvalidate
+    - pdfplumber
+    - python-pptx
+    - docling
+    
+    # 向量数据库
+    - chromadb
+    
+    # 其他工具
+    - nltk
+    - redis
+    - pytest

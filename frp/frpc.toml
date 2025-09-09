@@ -1,0 +1,11 @@
+[common]
+serverAddr = "93.179.115.189"
+serverPort = 7000
+token = "jwt_99527_scj"
+
+[[proxies]]
+name = "presenton-api"
+type = "http"
+localIP = "127.0.0.1"
+localPort = 80
+customDomains = ["ppt.samsoncj.xyz"]

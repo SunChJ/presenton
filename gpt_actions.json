@@ -42,8 +42,9 @@
                   },
                   "template": {
                     "type": "string",
-                    "default": "basic",
-                    "description": "Template name (use basic as default)"
+                    "default": "general",
+                    "enum": ["general", "classic", "classic-dark", "modern", "professional"],
+                    "description": "Presentation template style - general (default, general purpose layouts), classic (traditional layouts), classic-dark (dark theme), modern (business pitch style), professional (corporate presentations)"
                   },
                   "export_as": {
                     "type": "string",

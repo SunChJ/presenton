@@ -1,3 +1,9 @@
 {
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "dev": "./dev.sh",
+    "dev-frp": "./dev-frp.sh",
+    "dev-app": "node start.js --dev",
+    "stop": "./stop-dev.sh"
+  }
 }

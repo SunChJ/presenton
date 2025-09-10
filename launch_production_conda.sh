@@ -59,7 +59,19 @@ check_and_kill_port() {
 echo -e "${YELLOW}🛑 停止现有服务...${NC}"
 check_and_kill_port 8000 "FastAPI"
 check_and_kill_port 3001 "Next.js"
-check_and_kill_port 5001 "Nginx"
+check_and_kill_port 5001 "Nginx Port"
+
+# 彻底停止nginx进程
+echo -e "${YELLOW}🛑 彻底停止nginx进程...${NC}"
+if pgrep nginx > /dev/null 2>&1; then
+    echo -e "${YELLOW}⚠️  发现nginx进程，正在停止...${NC}"
+    sudo pkill -f nginx || true
+    sleep 2
+    # 强制杀死残留进程
+    sudo pkill -9 -f nginx || true
+    sleep 1
+fi
+echo -e "${GREEN}✅ nginx进程已清理${NC}"
 
 # 生成Nginx配置
 echo -e "${YELLOW}📄 生成Nginx生产配置...${NC}"

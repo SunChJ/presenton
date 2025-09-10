@@ -60,6 +60,7 @@ async def generate_presentation_for_gpts(
         print(f"Settings: {request.n_slides} slides, {request.template} template, {request.language}")
         
         # 转换GPTs请求为标准的GeneratePresentationRequest
+        # 注意：保留export_as但在生成流程中捕获导出错误
         generate_request = GeneratePresentationRequest(
             content=request.prompt,
             instructions=request.instructions,
@@ -70,7 +71,7 @@ async def generate_presentation_for_gpts(
             language=request.language,
             template=request.template,
             files=None,  # GPTs不支持文件上传
-            export_as=request.export_as
+            export_as=request.export_as  # 保留原始值，在生成时处理导出错误
         )
         
         print(f"Calling original generate_presentation_api...")
@@ -83,13 +84,23 @@ async def generate_presentation_for_gpts(
             result = await generate_presentation_api(generate_request, sql_session)
             print(f"完整生成成功！")
             
-        except Exception as export_error:
-            print(f"生成过程中出现错误（可能是导出问题）: {export_error}")
+        except Exception as error:
+            print(f"生成过程中出现错误: {error}")
+            error_str = str(error).lower()
             
-            # 如果是导出相关错误，我们仍然可以返回presentation链接
-            # 因为大纲、幻灯片、图片可能已经生成成功了
-            if "export" in str(export_error).lower() or "pptx" in str(export_error).lower():
-                # 查找刚刚可能已创建的presentation
+            # 检查是否是可恢复的错误类型
+            recoverable_errors = [
+                "export", "pptx", "temp_directory",  # 导出相关错误
+                "overloaded", "quota", "rate limit", "503", "429",  # API限额错误
+                "unavailable", "service unavailable"  # 服务不可用错误
+            ]
+            
+            is_recoverable = any(keyword in error_str for keyword in recoverable_errors)
+            
+            if is_recoverable:
+                print(f"检测到可恢复错误，尝试查找已创建的presentation...")
+                
+                # 查找可能已创建的presentation（即使部分失败）
                 from sqlmodel import select
                 recent_presentations = await sql_session.execute(
                     select(PresentationModel)
@@ -106,12 +117,52 @@ async def generate_presentation_for_gpts(
                         'edit_path': f"/presentation?id={recent_presentation.id}",
                         'path': f"/presentation?id={recent_presentation.id}"
                     })()
+                    
+                    # 返回部分成功的结果，并提示问题
+                    base_url = "https://ppt.samsoncj.xyz"
+                    presentation_id = str(result.presentation_id)
+                    full_edit_url = f"{base_url}{result.edit_path}"
+                    
+                    return GPTsPresentationResponse(
+                        presentation_id=presentation_id,
+                        title="AI Generated Presentation (部分生成)",
+                        outline="⚠️ 生成过程中遇到API限制，已保存部分内容",
+                        edit_url=full_edit_url,
+                        path=full_edit_url,
+                        message=f"⚠️ 生成过程中遇到问题：{str(error)[:100]}...\n\n但已保存演示文稿基础信息和部分内容：\n\n📋 标题: AI Generated Presentation\n📊 幻灯片数: {request.n_slides}\n🎨 模板: {request.template}\n🌐 语言: {request.language}\n\n🔗 **查看已生成内容**: {full_edit_url}\n\n💡 您可以在编辑页面手动完善内容，或稍后重新生成。\n\n🔄 如果是API限额问题，请稍后再试。"
+                    )
                 else:
-                    # 重新抛出异常
-                    raise export_error
+                    # 没有找到任何已创建的presentation，创建一个基本的
+                    print("未找到已创建的presentation，创建基本记录...")
+                    presentation_id = uuid.uuid4()
+                    presentation = PresentationModel(
+                        id=presentation_id,
+                        title="AI Generated Presentation (生成失败)",
+                        content=generate_request.content,
+                        language=generate_request.language,
+                        tone=generate_request.tone,
+                        instructions=generate_request.instructions,
+                        n_slides=generate_request.n_slides,
+                        template=generate_request.template,
+                        export_as=generate_request.export_as,
+                    )
+                    
+                    sql_session.add(presentation)
+                    await sql_session.commit()
+                    
+                    base_url = "https://ppt.samsoncj.xyz"
+                    return GPTsPresentationResponse(
+                        presentation_id=str(presentation_id),
+                        title="AI Generated Presentation (生成失败)",
+                        outline="❌ 生成过程失败，已保存基础信息",
+                        edit_url=f"{base_url}/presentation?id={presentation_id}",
+                        path=f"{base_url}/presentation?id={presentation_id}",
+                        message=f"❌ 生成失败：{str(error)[:100]}...\n\n已创建空白演示文稿模板：\n📋 标题: AI Generated Presentation\n📊 幻灯片数: {request.n_slides}\n🎨 模板: {request.template}\n\n🔗 您可以在编辑页面手动创建内容\n💡 或稍后重新尝试生成"
+                    )
             else:
-                # 非导出相关错误，重新抛出
-                raise export_error
+                # 非可恢复错误，重新抛出
+                print(f"不可恢复的错误，重新抛出: {error}")
+                raise error
         
         print(f"Generation completed successfully")
         print(f"Result: {result}")

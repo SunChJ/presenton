@@ -38,7 +38,40 @@ export async function GET(request: NextRequest) {
     const slides_attributes = await getSlidesAttributes(slides, screenshotsDir);
     await postProcessSlidesAttributes(slides_attributes, screenshotsDir, speakerNotes);
     const slides_pptx_models = convertElementAttributesToPptxSlides(slides_attributes);
+    
+    // Extract title from first slide for filename
+    const firstSlideTitle = await page.evaluate(() => {
+      const wrapper = document.getElementById('presentation-slides-wrapper');
+      if (!wrapper) return null;
+      
+      const firstSlide = wrapper.querySelector('[data-speaker-note]');
+      if (!firstSlide) return null;
+      
+      // Look for the main title in the first slide (common patterns)
+      const titleSelectors = [
+        'h1', 'h2', 'h3', 
+        '[style*="font-size: 48px"]', '[style*="font-size: 36px"]', '[style*="font-size: 32px"]',
+        '.text-4xl', '.text-3xl', '.text-2xl',
+        '.font-bold'
+      ];
+      
+      for (const selector of titleSelectors) {
+        const titleElement = firstSlide.querySelector(selector);
+        if (titleElement && titleElement.textContent && titleElement.textContent.trim().length > 0) {
+          return titleElement.textContent.trim();
+        }
+      }
+      
+      // Fallback: get any text from first slide
+      const allText = firstSlide.textContent || '';
+      const lines = allText.split('\n').filter(line => line.trim().length > 0);
+      return lines[0] || null;
+    });
+    
+    console.log(`[PPTX] Extracted first slide title: "${firstSlideTitle}"`);
+    
     const presentation_pptx_model: PptxPresentationModel = {
+      name: firstSlideTitle || 'presentation',
       slides: slides_pptx_models,
     };
 
@@ -77,6 +110,10 @@ async function getBrowserAndPage(id: string): Promise<[Browser, Page]> {
 
   const page = await browser.newPage();
 
+  // Enable console logging from the page for debugging
+  page.on('console', (msg) => console.log(`[PPTX Page Console] ${msg.type()}: ${msg.text()}`));
+  page.on('pageerror', (error) => console.error(`[PPTX Page Error] ${error.message}`));
+
   await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
   page.setDefaultNavigationTimeout(300000);
   page.setDefaultTimeout(300000);
@@ -106,18 +143,35 @@ function getScreenshotsDir() {
 }
 
 async function postProcessSlidesAttributes(slidesAttributes: SlideAttributesResult[], screenshotsDir: string, speakerNotes: string[]) {
+  console.log(`[PPTX] Post-processing ${slidesAttributes.length} slides`);
+  console.log(`[PPTX] Screenshots directory: ${screenshotsDir}`);
+  
+  let totalElementsToScreenshot = 0;
+  let screenshotCount = 0;
+  
   for (const [index, slideAttributes] of slidesAttributes.entries()) {
+    const elementsToScreenshot = slideAttributes.elements.filter(el => el.should_screenshot);
+    totalElementsToScreenshot += elementsToScreenshot.length;
+    
+    console.log(`[PPTX] Slide ${index + 1}: ${elementsToScreenshot.length} elements to screenshot`);
+    
     for (const element of slideAttributes.elements) {
       if (element.should_screenshot) {
+        console.log(`[PPTX] Screenshotting element: ${element.tagName} (${element.position?.width}x${element.position?.height})`);
         const screenshotPath = await screenshotElement(element, screenshotsDir);
         element.imageSrc = screenshotPath;
         element.should_screenshot = false;
         element.objectFit = 'cover';
         element.element = undefined;
+        screenshotCount++;
+        console.log(`[PPTX] Screenshot saved: ${screenshotPath}`);
       }
     }
     slideAttributes.speakerNote = speakerNotes[index];
   }
+  
+  console.log(`[PPTX] Total elements requiring screenshots: ${totalElementsToScreenshot}`);
+  console.log(`[PPTX] Successfully created screenshots: ${screenshotCount}`);
 }
 
 async function screenshotElement(element: ElementAttributes, screenshotsDir: string) {
@@ -218,11 +272,22 @@ async function getSlidesWrapper(page: Page): Promise<ElementHandle<Element>> {
   await page.waitForFunction(
     () => {
       const wrapper = document.getElementById('presentation-slides-wrapper');
-      if (!wrapper) return false;
+      if (!wrapper) {
+        console.log('No presentation-slides-wrapper found');
+        return false;
+      }
       
-      // Check if there are actual slide elements (not just skeleton loaders)
-      const slideElements = wrapper.querySelectorAll(':scope > div > div[data-speaker-note]');
-      return slideElements.length > 0;
+      // Try different selectors to find slides (same fix as PDF export)
+      const slideElements1 = wrapper.querySelectorAll(':scope > div > div[data-speaker-note]');
+      const slideElements2 = wrapper.querySelectorAll(':scope > div > div');
+      const slideElements3 = document.querySelectorAll('[data-speaker-note]');
+      
+      console.log(`PPTX: Selector1 (:scope > div > div[data-speaker-note]): ${slideElements1.length}`);
+      console.log(`PPTX: Selector2 (:scope > div > div): ${slideElements2.length}`);
+      console.log(`PPTX: Selector3 (all data-speaker-note): ${slideElements3.length}`);
+      
+      // Return true if we find any slides using any method
+      return slideElements3.length > 0 || slideElements2.length > 0;
     },
     { timeout: 30000 }
   );

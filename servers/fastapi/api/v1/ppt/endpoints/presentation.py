@@ -349,13 +349,22 @@ async def create_pptx(
     pptx_creator = PptxPresentationCreator(pptx_model, temp_dir)
     await pptx_creator.create_ppt()
 
+    # Use sanitized title from pptx_model, similar to PDF export
+    from pathvalidate import sanitize_filename
+    title = pptx_model.name or "presentation"
+    sanitized_title = sanitize_filename(title)
+    
     export_directory = get_exports_directory()
     pptx_path = os.path.join(
-        export_directory, f"{pptx_model.name or uuid.uuid4()}.pptx"
+        export_directory, f"{sanitized_title}.pptx"
     )
     pptx_creator.save(pptx_path)
 
-    return pptx_path
+    # Convert absolute path to relative URL path for frontend access
+    filename = os.path.basename(pptx_path)
+    download_url = f"/app_data/exports/{filename}"
+    
+    return download_url
 
 
 @PRESENTATION_ROUTER.post("/generate", response_model=PresentationPathAndEditPath)

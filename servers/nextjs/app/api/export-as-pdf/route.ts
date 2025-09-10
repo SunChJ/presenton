@@ -127,6 +127,37 @@ export async function POST(req: NextRequest) {
   }
 
 
+  // Extract the first slide title from the page
+  const firstSlideTitle = await page.evaluate(() => {
+    const wrapper = document.getElementById('presentation-slides-wrapper');
+    if (!wrapper) return null;
+    
+    const firstSlide = wrapper.querySelector('[data-speaker-note]');
+    if (!firstSlide) return null;
+    
+    // Look for the main title in the first slide (common patterns)
+    const titleSelectors = [
+      'h1', 'h2', 'h3', 
+      '[style*="font-size: 48px"]', '[style*="font-size: 36px"]', '[style*="font-size: 32px"]',
+      '.text-4xl', '.text-3xl', '.text-2xl',
+      '.font-bold'
+    ];
+    
+    for (const selector of titleSelectors) {
+      const titleElement = firstSlide.querySelector(selector);
+      if (titleElement && titleElement.textContent && titleElement.textContent.trim().length > 0) {
+        return titleElement.textContent.trim();
+      }
+    }
+    
+    // Fallback: get any text from first slide
+    const allText = firstSlide.textContent || '';
+    const lines = allText.split('\n').filter(line => line.trim().length > 0);
+    return lines[0] || null;
+  });
+
+  console.log(`[PDF Export] Extracted first slide title: "${firstSlideTitle}"`);
+  
   console.log(`[PDF Export] Generating PDF...`);
   const pdfBuffer = await page.pdf({
     width: "1280px",
@@ -138,7 +169,9 @@ export async function POST(req: NextRequest) {
   console.log(`[PDF Export] PDF generated, size: ${pdfBuffer.length} bytes`);
   browser.close();
 
-  const sanitizedTitle = sanitizeFilename(title ?? 'presentation');
+  // Use first slide title or fallback to provided title
+  const finalTitle = firstSlideTitle || title || 'presentation';
+  const sanitizedTitle = sanitizeFilename(finalTitle);
   const destinationPath = path.join(process.env.APP_DATA_DIRECTORY!, 'exports', `${sanitizedTitle}.pdf`);
   await fs.promises.mkdir(path.dirname(destinationPath), { recursive: true });
   await fs.promises.writeFile(destinationPath, pdfBuffer);

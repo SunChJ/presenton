@@ -62,56 +62,52 @@ def round_image_corners(image: Image.Image, radii: List[int]) -> Image.Image:
     if image.mode != "RGBA":
         image = image.convert("RGBA")
 
-    # Create a mask for the rounded corners (start with fully transparent)
-    rounded_mask = Image.new("L", image.size, 0)
+    # Use higher resolution for smoother anti-aliasing
+    scale_factor = 4  # 4x supersampling for better quality
+    high_res_w, high_res_h = w * scale_factor, h * scale_factor
+    
+    # Scale up the image for processing
+    high_res_image = image.resize((high_res_w, high_res_h), Image.LANCZOS)
+    
+    # Scale up radii accordingly
+    high_res_radii = [radius * scale_factor for radius in clamped_radii]
 
-    # Create a rectangular mask (fully opaque)
-    rectangular_mask = Image.new("L", image.size, 255)
+    # Create high-resolution mask
+    mask = Image.new("L", (high_res_w, high_res_h), 0)
+    draw = ImageDraw.Draw(mask)
 
-    # Process each corner
-    for i, radius in enumerate(clamped_radii):
-        if radius > 0:  # Only process if radius is positive
-            # Create a circle for this radius
-            circle = Image.new("L", (radius * 2, radius * 2), 0)
-            draw = ImageDraw.Draw(circle)
-            draw.ellipse((0, 0, radius * 2 - 1, radius * 2 - 1), fill=255)
+    # Draw the rounded rectangle mask
+    # Start with the main rectangle (excluding corners)
+    max_high_radius = max(high_res_radii)
+    draw.rectangle((max_high_radius, 0, high_res_w - max_high_radius, high_res_h), fill=255)
+    draw.rectangle((0, max_high_radius, high_res_w, high_res_h - max_high_radius), fill=255)
 
-            # Calculate position based on corner index
+    # Draw each rounded corner with anti-aliasing
+    for i, radius in enumerate(high_res_radii):
+        if radius > 0:
+            # Calculate corner position
             if i == 0:  # top-left
-                rounded_mask.paste(circle.crop((0, 0, radius, radius)), (0, 0))
-                rectangular_mask.paste(0, (0, 0, radius, radius))
+                x, y = 0, 0
             elif i == 1:  # top-right
-                rounded_mask.paste(
-                    circle.crop((radius, 0, radius * 2, radius)), (w - radius, 0)
-                )
-                rectangular_mask.paste(0, (w - radius, 0, w, radius))
+                x, y = high_res_w - radius * 2, 0
             elif i == 2:  # bottom-right
-                rounded_mask.paste(
-                    circle.crop((radius, radius, radius * 2, radius * 2)),
-                    (w - radius, h - radius),
-                )
-                rectangular_mask.paste(0, (w - radius, h - radius, w, h))
+                x, y = high_res_w - radius * 2, high_res_h - radius * 2
             else:  # bottom-left
-                rounded_mask.paste(
-                    circle.crop((0, radius, radius, radius * 2)), (0, h - radius)
-                )
-                rectangular_mask.paste(0, (0, h - radius, radius, h))
+                x, y = 0, high_res_h - radius * 2
 
-    # Get the original alpha channel
-    original_alpha = image.getchannel("A")
+            # Draw quarter circle for this corner
+            draw.pieslice(
+                (x, y, x + radius * 2, y + radius * 2),
+                start=i * 90,
+                end=(i + 1) * 90,
+                fill=255
+            )
 
-    # Combine the rectangular mask with the rounded corners
-    corner_mask = Image.composite(rounded_mask, rectangular_mask, rounded_mask)
+    # Apply the mask to the high-resolution image
+    high_res_image.putalpha(mask)
 
-    # Combine the corner mask with the original alpha channel
-    final_alpha = Image.composite(
-        original_alpha, Image.new("L", image.size, 0), corner_mask
-    )
-
-    # Create a new image with the modified alpha channel
-    result = Image.new("RGBA", image.size)
-    result.paste(image.convert("RGB"), (0, 0))
-    result.putalpha(final_alpha)
+    # Scale back down with high-quality resampling for smooth edges
+    result = high_res_image.resize((w, h), Image.LANCZOS)
 
     return result
 
@@ -144,19 +140,28 @@ def create_circle_image(
     # Convert to RGBA if not already
     img = image.convert("RGBA")
     # Get the original image size
-    size = img.size
+    w, h = img.size
+    
+    # Use higher resolution for smoother anti-aliasing
+    scale_factor = 4  # 4x supersampling for better quality
+    high_res_w, high_res_h = w * scale_factor, h * scale_factor
+    
+    # Scale up the image for processing
+    high_res_img = img.resize((high_res_w, high_res_h), Image.LANCZOS)
+    
     # Use the smaller dimension for the circle
-    circle_size = min(size)
-    # Create a transparent image of the same size as original
-    mask = Image.new("RGBA", size, color=(0, 0, 0, 0))
+    circle_size = min(high_res_w, high_res_h)
+    radius = circle_size // 2
+    
+    # Create high-resolution mask
+    mask = Image.new("L", (high_res_w, high_res_h), 0)
     draw = ImageDraw.Draw(mask)
 
     # Calculate center position
-    center_x = size[0] // 2
-    center_y = size[1] // 2
-    radius = circle_size // 2
+    center_x = high_res_w // 2
+    center_y = high_res_h // 2
 
-    # Create a circular mask
+    # Create a circular mask with anti-aliasing
     draw.ellipse(
         (
             center_x - radius,
@@ -164,11 +169,15 @@ def create_circle_image(
             center_x + radius,
             center_y + radius,
         ),
-        fill=(255, 255, 255, 255),
+        fill=255,
     )
 
-    # Apply the circular mask
-    result = Image.composite(img, mask, mask)
+    # Apply the mask to the high-resolution image
+    high_res_img.putalpha(mask)
+
+    # Scale back down with high-quality resampling for smooth edges
+    result = high_res_img.resize((w, h), Image.LANCZOS)
+    
     return result
 
 

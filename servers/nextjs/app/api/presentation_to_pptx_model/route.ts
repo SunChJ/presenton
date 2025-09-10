@@ -376,9 +376,23 @@ async function getAllChildElementsAttributes({ element, rootRect = null, depth =
       }
     }
 
-    if (attributes.tagName === 'svg' || attributes.tagName === 'canvas' || attributes.tagName === 'table') {
+    // Handle different types of visual elements for PPTX
+    const hasBackgroundImage = attributes.imageSrc && 
+                               !attributes.imageSrc.startsWith('data:') && 
+                               attributes.tagName !== 'img'; // Background image (not img element)
+    
+    if (attributes.tagName === 'img') {
+      // For img tags, use the full server domain URL (img.src provides absolute URL)
+      console.log(`[PPTX] Using server domain URL for img: ${attributes.imageSrc} (${attributes.position?.width}x${attributes.position?.height})`);
+      // Don't screenshot img elements - backend will download from server URL
+    } else if (attributes.tagName === 'svg' || 
+               attributes.tagName === 'canvas' || 
+               attributes.tagName === 'table' || 
+               hasBackgroundImage) {
+      // These need screenshots because they're complex or embedded
       attributes.should_screenshot = true;
       attributes.element = childElementHandle;
+      console.log(`[PPTX] Marking ${attributes.tagName} for screenshot: ${attributes.position?.width}x${attributes.position?.height}${hasBackgroundImage ? ' (has background image)' : ''}`);
     }
 
     allResults.push({ attributes, depth });

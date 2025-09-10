@@ -29,6 +29,11 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
+def get_async_session_maker():
+    """返回async session maker用于后台任务"""
+    return async_session_maker
+
+
 # Container DB (Lives inside the container or local temp)
 container_db_url = "sqlite+aiosqlite:////tmp/presenton/container.db"
 container_db_engine: AsyncEngine = create_async_engine(

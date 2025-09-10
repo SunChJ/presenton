@@ -1,5 +1,8 @@
 import { ApiError } from "@/models/errors";
 import { NextRequest, NextResponse } from "next/server";
+
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
 import puppeteer, { Browser, ElementHandle, Page } from "puppeteer";
 import { ElementAttributes, SlideAttributesResult } from "@/types/element_attibutes";
 import { convertElementAttributesToPptxSlides } from "@/utils/pptx_models_utils";
@@ -77,7 +80,7 @@ async function getBrowserAndPage(id: string): Promise<[Browser, Page]> {
   await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
   page.setDefaultNavigationTimeout(300000);
   page.setDefaultTimeout(300000);
-  await page.goto(`http://localhost/pdf-maker?id=${id}`, {
+  await page.goto(`http://localhost:3001/pdf-maker?id=${id}`, {
     waitUntil: "networkidle0",
     timeout: 300000,
   });

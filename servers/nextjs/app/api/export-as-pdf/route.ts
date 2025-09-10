@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   page.setDefaultNavigationTimeout(300000);
   page.setDefaultTimeout(300000);
 
-  await page.goto(`http://localhost/pdf-maker?id=${id}`, { waitUntil: 'networkidle0', timeout: 300000 });
+  await page.goto(`http://localhost:3001/pdf-maker?id=${id}`, { waitUntil: 'networkidle0', timeout: 300000 });
 
   await page.waitForFunction('() => document.readyState === "complete"')
 

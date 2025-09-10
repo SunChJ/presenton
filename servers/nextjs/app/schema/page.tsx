@@ -20,7 +20,7 @@ const page = () => {
           <div data-layouts={JSON.stringify(layouts)}>
             <pre>{JSON.stringify(layouts, null, 2)}</pre>\
           </div>
-          <div data-settings={JSON.stringify(settings)}>
+          <div data-group-settings={JSON.stringify(settings)}>
             <pre>{JSON.stringify(settings, null, 2)}</pre>
           </div>
         </div>

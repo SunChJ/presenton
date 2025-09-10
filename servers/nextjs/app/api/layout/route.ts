@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Missing group name" }, { status: 400 });
   }
 
-  const schemaPageUrl = `http://localhost/schema?group=${encodeURIComponent(groupName)}`;
+  const schemaPageUrl = `http://localhost:3001/schema?group=${encodeURIComponent(groupName)}`;
   console.log("Fetching client page:", schemaPageUrl);
 
   let browser;
@@ -29,7 +29,11 @@ export async function GET(request: Request) {
       timeout: 300000,
     });
     
-    await page.waitForSelector("[data-layouts]", { timeout: 300000 });
+    // 等待页面完全加载，增加延迟确保React组件渲染完成
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    // 等待元素出现
+    await page.waitForSelector("[data-layouts]", { timeout: 60000 });
 
     // Extract both data-layouts and data-group-settings attributes
     const { dataLayouts, dataGroupSettings } = await page.$eval(

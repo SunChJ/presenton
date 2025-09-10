@@ -80,7 +80,7 @@ async function getBrowserAndPage(id: string): Promise<[Browser, Page]> {
   await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
   page.setDefaultNavigationTimeout(300000);
   page.setDefaultTimeout(300000);
-  await page.goto(`http://localhost:3001/pdf-maker?id=${id}`, {
+  await page.goto(`http://localhost:5001/pdf-maker?id=${id}`, {
     waitUntil: "networkidle0",
     timeout: 300000,
   });
@@ -208,10 +208,25 @@ async function getSlidesAndSpeakerNotes(page: Page) {
 }
 
 async function getSlidesWrapper(page: Page): Promise<ElementHandle<Element>> {
+  // Wait for the wrapper element to exist
   const slides_wrapper = await page.$("#presentation-slides-wrapper");
   if (!slides_wrapper) {
-    throw new ApiError("Presentation slides not found");
+    throw new ApiError("Presentation slides wrapper not found");
   }
+  
+  // Wait for presentation data to load and slides to be rendered
+  await page.waitForFunction(
+    () => {
+      const wrapper = document.getElementById('presentation-slides-wrapper');
+      if (!wrapper) return false;
+      
+      // Check if there are actual slide elements (not just skeleton loaders)
+      const slideElements = wrapper.querySelectorAll(':scope > div > div[data-speaker-note]');
+      return slideElements.length > 0;
+    },
+    { timeout: 30000 }
+  );
+  
   return slides_wrapper;
 }
 

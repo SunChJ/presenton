@@ -1,52 +1,31 @@
 #!/bin/bash
 
-# Conda环境下的简化多终端启动脚本
+# Launch Development - Conda Environment with iTerm2
+# 启动开发模式 - 使用iTerm2 2x2布局
 
-set -e
+PROJECT_ROOT="$(pwd)"
 
 # 颜色定义
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
-BLUE='\033[0;34m'
 NC='\033[0m'
 
-echo -e "${BLUE}🚀 Presenton 开发环境快速启动${NC}"
+echo -e "${YELLOW}🚀 启动开发模式 - iTerm2多窗口...${NC}"
+echo "================================"
 
-# 检查conda环境
-if ! conda env list | grep -q "^presenton "; then
-    echo -e "${RED}❌ 请先运行: ./setup_conda_env.sh${NC}"
-    exit 1
-fi
-
-# 确保在项目根目录
-cd "$(dirname "$0")"
-PROJECT_ROOT=$(pwd)
-
-# 检测终端应用 (优先使用 iTerm2)
+# Terminal类型检测函数
 detect_terminal() {
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS - 优先检测 iTerm2
+    if command -v osascript >/dev/null 2>&1; then
         if osascript -e 'tell application "iTerm2" to version' &> /dev/null; then
             echo "iterm2"
+            return
         elif osascript -e 'tell application "Terminal" to version' &> /dev/null; then
             echo "terminal"
-        else
-            echo "none"
+            return
         fi
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        if command -v gnome-terminal &> /dev/null; then
-            echo "gnome-terminal"
-        elif command -v konsole &> /dev/null; then
-            echo "konsole"
-        elif command -v xterm &> /dev/null; then
-            echo "xterm"
-        else
-            echo "none"
-        fi
-    else
-        echo "none"
     fi
+    echo "none"
 }
 
 TERMINAL_TYPE=$(detect_terminal)
@@ -58,24 +37,49 @@ case $TERMINAL_TYPE in
     "terminal")
         echo -e "${YELLOW}🍎 使用 macOS Terminal${NC}"
         ;;
-    "gnome-terminal")
-        echo -e "${YELLOW}🐧 使用 GNOME Terminal${NC}"
-        ;;
-    "none")
-        echo -e "${RED}❌ 未找到支持的终端应用，请使用 ./start_full_conda.sh${NC}"
-        exit 1
-        ;;
     *)
-        echo -e "${YELLOW}🐧 使用 $TERMINAL_TYPE${NC}"
+        echo -e "${RED}❌ 未检测到可用的终端应用${NC}"
+        exit 1
         ;;
 esac
 
+# 检查端口占用并停止现有服务
+check_and_kill_port() {
+    local port=$1
+    local service_name=$2
+    if lsof -ti:$port > /dev/null 2>&1; then
+        echo -e "${YELLOW}⚠️  端口 $port 被占用，停止现有进程...${NC}"
+        lsof -ti:$port | xargs kill -9
+        sleep 2
+    fi
+    echo -e "${GREEN}✅ 端口 $port 已释放 ($service_name)${NC}"
+}
+
 # 停止现有服务
-echo -e "${YELLOW}🔄 停止现有服务...${NC}"
-./stop_all_conda.sh > /dev/null 2>&1 || true
+echo -e "${YELLOW}🛑 停止现有服务...${NC}"
+check_and_kill_port 8000 "FastAPI"
+check_and_kill_port 3001 "Next.js"
+check_and_kill_port 5001 "Nginx Port"
+check_and_kill_port 5678 "Debugpy"
+
+# 彻底停止nginx进程
+echo -e "${YELLOW}🛑 彻底停止nginx进程...${NC}"
+if pgrep nginx > /dev/null 2>&1; then
+    echo -e "${YELLOW}⚠️  发现nginx进程，正在停止...${NC}"
+    sudo pkill -f nginx || true
+    sleep 2
+    # 强制杀死残留进程
+    sudo pkill -9 -f nginx || true
+    sleep 1
+fi
+echo -e "${GREEN}✅ nginx进程已清理${NC}"
+
+# 生成Nginx配置
+echo -e "${YELLOW}📄 生成Nginx开发配置...${NC}"
+sed "s|__USER__|$(whoami)|g; s|__GROUP__|$(id -gn)|g; s|__PROJECT_ROOT__|$PROJECT_ROOT|g" nginx-production.conf > /tmp/nginx-dev-$(whoami).conf
 
 # 启动服务
-echo -e "${YELLOW}🚀 启动服务...${NC}"
+echo -e "${YELLOW}🚀 启动开发服务...${NC}"
 
 case $TERMINAL_TYPE in
     "iterm2")
@@ -84,15 +88,15 @@ case $TERMINAL_TYPE in
 tell application "iTerm2"
     activate
     
-    -- Top Left: Nginx Proxy
-    set nginxWindow to (create window with default profile)
-    tell nginxWindow
+    -- Top Left: Project Root
+    set rootWindow to (create window with default profile)
+    tell rootWindow
         set bounds to {50, 50, 700, 400}
     end tell
-    set nginxSession to current session of nginxWindow
-    tell nginxSession
-        write text "cd \"$PROJECT_ROOT\" && echo 'Starting Nginx Proxy...' && ./start_nginx_conda.sh"
-        set name to "🌐 Nginx"
+    set rootSession to current session of rootWindow
+    tell rootSession
+        write text "cd \"$PROJECT_ROOT\" && echo 'Starting FRP Client...' && ./start_frpc_conda.sh"
+        set name to "🌐 FRP"
     end tell
     
     delay 1
@@ -104,101 +108,74 @@ tell application "iTerm2"
     end tell
     set backendSession to current session of backendWindow
     tell backendSession
-        write text "cd \"$PROJECT_ROOT\" && echo 'Starting FastAPI Backend...' && sleep 2 && ./start_backend_conda.sh"
-        set name to "⚡ FastAPI"
+        write text "cd \"$PROJECT_ROOT\" && echo 'Starting FastAPI Backend Development...' && source \"\$(conda info --base)/etc/profile.d/conda.sh\" && conda activate presenton && source .env.local && cd servers/fastapi && export APP_DATA_DIRECTORY=\"$PROJECT_ROOT/app_data\" && export TEMP_DIRECTORY=\"$PROJECT_ROOT/app_data/temp\" && export USER_CONFIG_PATH=\"$PROJECT_ROOT/app_data/userConfig.json\" && export DATABASE_URL=\"sqlite:///$PROJECT_ROOT/app_data/presenton-dev.db\" && export LLM=\"google\" && export IMAGE_PROVIDER=\"google\" && export GOOGLE_API_KEY=\"AIzaSyDxOJfpsvAdXjXlRU_Qjwsq3dRVPFKMCdw\" && export CAN_CHANGE_KEYS=\"true\" && export PYDEVD_DISABLE_FILE_VALIDATION=\"1\" && export ENABLE_DEBUGPY=\"true\" && python -X frozen_modules=off server.py --port 8000 --reload true"
+        set name to "⚡ FastAPI-Dev"
     end tell
     
     delay 1
     
-    -- Bottom Left: Next.js Frontend
+    -- Bottom Left: Next.js Frontend (Development Mode)
     set frontendWindow to (create window with default profile)
     tell frontendWindow
         set bounds to {50, 400, 700, 750}
     end tell
     set frontendSession to current session of frontendWindow
     tell frontendSession
-        write text "cd \"$PROJECT_ROOT\" && echo 'Starting Next.js Frontend...' && sleep 4 && ./start_frontend_conda.sh"
-        set name to "🎨 Next.js"
+        write text "cd \"$PROJECT_ROOT\" && echo 'Starting Next.js Frontend Development...' && source \"\$(conda info --base)/etc/profile.d/conda.sh\" && conda activate presenton && cd servers/nextjs && export APP_DATA_DIRECTORY=\"$PROJECT_ROOT/app_data\" && export TEMP_DIRECTORY=\"$PROJECT_ROOT/app_data/temp\" && export USER_CONFIG_PATH=\"$PROJECT_ROOT/app_data/userConfig.json\" && npm run dev -- -p 3001"
+        set name to "🎨 Next.js-Dev"
     end tell
     
     delay 1
     
-    -- Bottom Right: FRP Tunnel
-    set frpWindow to (create window with default profile)
-    tell frpWindow
+    -- Bottom Right: Nginx Proxy
+    set nginxWindow to (create window with default profile)
+    tell nginxWindow
         set bounds to {700, 400, 1350, 750}
     end tell
-    set frpSession to current session of frpWindow
-    tell frpSession
-        write text "cd \"$PROJECT_ROOT\" && echo 'Starting FRP Tunnel...' && sleep 6 && ./start_frpc_conda.sh"
-        set name to "🌐 FRP"
+    set nginxSession to current session of nginxWindow
+    tell nginxSession
+        write text "cd \"$PROJECT_ROOT\" && echo 'Starting Nginx Proxy Development...' && sleep 8 && sudo nginx -c /tmp/nginx-dev-\$(whoami).conf && echo 'Nginx started successfully!' && echo 'Monitoring access via: curl http://localhost:5001' && while true; do echo '[Nginx Status Check]'; curl -s -o /dev/null -w 'HTTP Status: %{http_code}' http://localhost:5001; echo ''; sleep 30; done"
+        set name to "🌐 Nginx-Dev"
     end tell
-    
-    -- Focus on nginx window
-    select nginxSession
-    
 end tell
 EOF
         ;;
     "terminal")
-        # macOS Terminal - 备用方案
-        osascript <<EOF
-tell application "Terminal"
-    activate
-    
-    -- Nginx 窗口
-    set nginxTab to do script "cd \"$PROJECT_ROOT\" && echo '🌐 Nginx 反向代理' && ./start_nginx_conda.sh"
-    set custom title of nginxTab to "🌐 Nginx Proxy"
-    delay 3
-    
-    -- 后端窗口
-    set backendTab to do script "cd \"$PROJECT_ROOT\" && echo '⚡ FastAPI 后端' && ./start_backend_conda.sh"  
-    set custom title of backendTab to "⚡ FastAPI Backend"
-    delay 2
-    
-    -- 前端窗口
-    set frontendTab to do script "cd \"$PROJECT_ROOT\" && echo '🎨 Next.js 前端' && ./start_frontend_conda.sh"
-    set custom title of frontendTab to "🎨 Next.js Frontend"
-    delay 2
-    
-    -- FRP 内网穿透窗口
-    set frpTab to do script "cd \"$PROJECT_ROOT\" && echo '🌐 FRP 内网穿透' && ./start_frpc_conda.sh"
-    set custom title of frpTab to "🌐 FRP Tunnel"
-    
-end tell
-EOF
-        ;;
-    "gnome-terminal")
-        # Linux GNOME Terminal
-        gnome-terminal \
-            --tab --title="🌐 Nginx" -- bash -c "cd '$PROJECT_ROOT' && echo '🌐 Nginx 反向代理' && ./start_nginx_conda.sh; exec bash" \
-            --tab --title="⚡ Backend" -- bash -c "cd '$PROJECT_ROOT' && sleep 3 && echo '⚡ FastAPI 后端' && ./start_backend_conda.sh; exec bash" \
-            --tab --title="🎨 Frontend" -- bash -c "cd '$PROJECT_ROOT' && sleep 5 && echo '🎨 Next.js 前端' && ./start_frontend_conda.sh; exec bash" \
-            --tab --title="🌐 FRP" -- bash -c "cd '$PROJECT_ROOT' && sleep 7 && echo '🌐 FRP 内网穿透' && ./start_frpc_conda.sh; exec bash"
-        ;;
-    *)
-        echo -e "${RED}❌ 不支持的终端类型: $TERMINAL_TYPE${NC}"
-        exit 1
+        # macOS Terminal fallback
+        echo -e "${YELLOW}使用 Terminal 启动开发服务...${NC}"
+        
+        # 启动FastAPI
+        osascript -e 'tell app "Terminal" to do script "cd '\"$PROJECT_ROOT\"' && source \"$(conda info --base)/etc/profile.d/conda.sh\" && conda activate presenton && source .env.local && cd servers/fastapi && export APP_DATA_DIRECTORY=\"'$PROJECT_ROOT'/app_data\" && export TEMP_DIRECTORY=\"'$PROJECT_ROOT'/app_data/temp\" && export USER_CONFIG_PATH=\"'$PROJECT_ROOT'/app_data/userConfig.json\" && export DATABASE_URL=\"sqlite:///'$PROJECT_ROOT'/app_data/presenton-dev.db\" && export LLM=\"google\" && export IMAGE_PROVIDER=\"google\" && export GOOGLE_API_KEY=\"AIzaSyDxOJfpsvAdXjXlRU_Qjwsq3dRVPFKMCdw\" && export CAN_CHANGE_KEYS=\"true\" && export PYDEVD_DISABLE_FILE_VALIDATION=\"1\" && export ENABLE_DEBUGPY=\"true\" && python -X frozen_modules=off server.py --port 8000 --reload true"'
+        
+        sleep 2
+        
+        # 启动Next.js开发服务器
+        osascript -e 'tell app "Terminal" to do script "cd '\"$PROJECT_ROOT\"' && source \"$(conda info --base)/etc/profile.d/conda.sh\" && conda activate presenton && cd servers/nextjs && export APP_DATA_DIRECTORY=\"'$PROJECT_ROOT'/app_data\" && export TEMP_DIRECTORY=\"'$PROJECT_ROOT'/app_data/temp\" && export USER_CONFIG_PATH=\"'$PROJECT_ROOT'/app_data/userConfig.json\" && npm run dev -- -p 3001"'
+        
+        sleep 5
+        
+        # 启动Nginx
+        sudo nginx -c /tmp/nginx-dev-$(whoami).conf
         ;;
 esac
 
+sleep 3
+
+echo -e "${GREEN}✅ 开发环境启动完成！${NC}"
+echo "================================"
+echo -e "${GREEN}📱 iTerm2窗口布局 (2x2):${NC}"
+echo "  • 🏠 左上: 项目根目录/FRP客户端"
+echo "  • ⚡ 右上: FastAPI后端服务 (开发模式 + 热重载)"
+echo "  • 🎨 左下: Next.js前端服务 (开发模式 + 热重载)"
+echo "  • 🌐 右下: Nginx反向代理"
 echo ""
-echo -e "${GREEN}🎉 开发环境已启动！${NC}"
+echo -e "${GREEN}🌍 访问地址:${NC}"
+echo "  • 本地: http://localhost:5001"
+echo "  • 外网: https://ppt.samsoncj.xyz"
 echo ""
-echo -e "${BLUE}📱 2x2 窗口布局:${NC}"
-echo "  • 🌐 左上: Nginx 代理服务"
-echo "  • ⚡ 右上: FastAPI 后端服务" 
-echo "  • 🎨 左下: Next.js 前端服务"
-echo "  • 🌐 右下: FRP 内网穿透服务"
+echo -e "${GREEN}🔥 开发模式特性:${NC}"
+echo "  • FastAPI: 代码修改自动重载 (--reload)"
+echo "  • Next.js: 热重载 (npm run dev)"
+echo "  • 数据库: presenton-dev.db (独立开发数据库)"
 echo ""
-echo -e "${BLUE}🌐 访问地址:${NC}"
-echo "  • 本地完整应用: http://localhost:5001"
-echo "  • 外网访问: http://ppt.samsoncj.xyz:8080"
-echo "  • API文档: http://localhost:8000/docs"
-echo ""
-echo -e "${YELLOW}💡 提示:${NC}"
-echo "  • 4个服务在2x2网格布局的独立窗口中运行"
-echo "  • 关闭对应窗口可停止单个服务"
-echo "  • 运行 ./stop_all_conda.sh 停止所有服务"
-echo ""
-echo -e "${GREEN}✨ 开发愉快！${NC}"
+echo -e "${GREEN}🛑 停止服务: 关闭iTerm2窗口或 Ctrl+C${NC}"

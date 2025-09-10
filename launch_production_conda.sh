@@ -120,7 +120,7 @@ tell application "iTerm2"
     end tell
     set frontendSession to current session of frontendWindow
     tell frontendSession
-        write text "cd \"$PROJECT_ROOT\" && echo 'Starting Next.js Frontend Production...' && source \"\$(conda info --base)/etc/profile.d/conda.sh\" && conda activate presenton && cd servers/nextjs && export USER_CONFIG_PATH=\"$PROJECT_ROOT/app_data/userConfig.json\" && npm start -- -p 3001"
+        write text "cd \"$PROJECT_ROOT\" && echo 'Starting Next.js Frontend Production...' && source \"\$(conda info --base)/etc/profile.d/conda.sh\" && conda activate presenton && cd servers/nextjs && export APP_DATA_DIRECTORY=\"$PROJECT_ROOT/app_data\" && export TEMP_DIRECTORY=\"$PROJECT_ROOT/app_data/temp\" && export USER_CONFIG_PATH=\"$PROJECT_ROOT/app_data/userConfig.json\" && npm start -- -p 3001"
         set name to "🎨 Next.js"
     end tell
     

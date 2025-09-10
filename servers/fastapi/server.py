@@ -1,10 +1,21 @@
 import uvicorn
 import argparse
 import debugpy
+import os
 
-debugpy.listen(5678)
-print("等待调试器连接...")
-debugpy.wait_for_client()  # 可选，等待调试器连接后再继续
+# Only enable debugpy if explicitly requested
+if os.getenv("ENABLE_DEBUGPY") == "true":
+    try:
+        debugpy.listen(5678)
+        print("等待调试器连接...")
+        debugpy.wait_for_client()  # 可选，等待调试器连接后再继续
+    except RuntimeError as e:
+        if "Address already in use" in str(e):
+            print("调试器端口已被占用，尝试连接到现有调试器...")
+            # 如果端口被占用，说明VSCode已经在监听，我们可以继续运行
+            pass
+        else:
+            raise e
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the FastAPI server")

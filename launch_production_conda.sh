@@ -95,7 +95,7 @@ tell application "iTerm2"
     end tell
     set backendSession to current session of backendWindow
     tell backendSession
-        write text "cd \"$PROJECT_ROOT\" && echo 'Starting FastAPI Backend Production...' && source \"\$(conda info --base)/etc/profile.d/conda.sh\" && conda activate presenton && source .env.local && cd servers/fastapi && export APP_DATA_DIRECTORY=\"$PROJECT_ROOT/app_data\" && export TEMP_DIRECTORY=\"$PROJECT_ROOT/app_data/temp\" && export USER_CONFIG_PATH=\"$PROJECT_ROOT/app_data/userConfig.json\" && export DATABASE_URL=\"sqlite:///$PROJECT_ROOT/app_data/presenton-prod.db\" && python server.py --port 8000"
+        write text "cd \"$PROJECT_ROOT\" && echo 'Starting FastAPI Backend Production...' && source \"\$(conda info --base)/etc/profile.d/conda.sh\" && conda activate presenton && source .env.local && cd servers/fastapi && export APP_DATA_DIRECTORY=\"$PROJECT_ROOT/app_data\" && export TEMP_DIRECTORY=\"$PROJECT_ROOT/app_data/temp\" && export USER_CONFIG_PATH=\"$PROJECT_ROOT/app_data/userConfig.json\" && export DATABASE_URL=\"sqlite:///$PROJECT_ROOT/app_data/presenton-prod.db\" && export LLM=\"google\" && export IMAGE_PROVIDER=\"google\" && export GOOGLE_API_KEY=\"AIzaSyDxOJfpsvAdXjXlRU_Qjwsq3dRVPFKMCdw\" && export CAN_CHANGE_KEYS=\"true\" && python server.py --port 8000"
         set name to "⚡ FastAPI"
     end tell
     

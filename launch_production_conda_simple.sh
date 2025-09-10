@@ -36,7 +36,7 @@ echo "🖥️  启动Terminal窗口..."
 # FastAPI后端
 osascript -e "
 tell application \"Terminal\"
-    do script \"cd '$PROJECT_ROOT' && source \\\"\$(conda info --base)/etc/profile.d/conda.sh\\\" && conda activate presenton && cd servers/fastapi && echo '🔧 FastAPI后端 (生产模式)' && python server.py\"
+    do script \"cd '$PROJECT_ROOT' && source \\\"\$(conda info --base)/etc/profile.d/conda.sh\\\" && conda activate presenton && source .env.local && cd servers/fastapi && export APP_DATA_DIRECTORY='$PROJECT_ROOT/app_data' && export TEMP_DIRECTORY='$PROJECT_ROOT/app_data/temp' && export DATABASE_URL='sqlite:///$PROJECT_ROOT/app_data/presenton-prod.db' && export LLM='google' && export IMAGE_PROVIDER='google' && export GOOGLE_API_KEY='AIzaSyDxOJfpsvAdXjXlRU_Qjwsq3dRVPFKMCdw' && export CAN_CHANGE_KEYS='true' && echo '🔧 FastAPI后端 (生产模式)' && python server.py\"
 end tell
 "
 

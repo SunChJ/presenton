@@ -1,0 +1,9 @@
+{
+  "prompt": "创建一个关于人工智能在教育领域应用的演示文稿，包括AI技术介绍、教育场景应用、成功案例分析、挑战与解决方案、未来发展趋势",
+  "n_slides": 5,
+  "language": "Chinese",
+  "template": "classic",
+  "export_as": "pptx",
+  "tone": "professional",
+  "instructions": "重点突出实际应用案例"
+}

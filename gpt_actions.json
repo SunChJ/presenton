@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "PPT Generator - Working Version",
-    "description": "AI-powered PowerPoint presentation generator",
-    "version": "1.0.0"
+    "title": "AI Presentation Generator",
+    "description": "Create professional PowerPoint presentations with AI assistance. Complete workflow from outline to final slides with multiple templates and export options.",
+    "version": "2.0.0"
   },
   "servers": [
     {
@@ -11,11 +11,11 @@
     }
   ],
   "paths": {
-    "/api/v1/ppt/presentation/generate": {
+    "/api/v1/ppt/gpts/generate": {
       "post": {
         "operationId": "generatePresentation",
-        "summary": "Generate PowerPoint presentation",
-        "description": "Create a complete presentation from topic description. When user requests a presentation, generate an outline first, then confirm before creating the final presentation with download and edit links.",
+        "summary": "Generate PowerPoint presentation with streaming",
+        "description": "Create a complete presentation from topic description with real-time generation. This endpoint will generate an outline, prepare layouts, and stream the complete presentation creation process. Returns immediate access link for viewing progress and final results.",
         "requestBody": {
           "required": true,
           "content": {
@@ -23,9 +23,9 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "content": {
+                  "prompt": {
                     "type": "string",
-                    "description": "Detailed description of the presentation topic and structure. Include number of slides and outline in the content."
+                    "description": "Detailed description of the presentation topic. The AI will automatically generate an outline and structure. Be specific about the topic and any key points to cover."
                   },
                   "n_slides": {
                     "type": "integer",
@@ -42,9 +42,9 @@
                   },
                   "template": {
                     "type": "string",
-                    "default": "general",
+                    "default": "classic",
                     "enum": ["general", "classic", "classic-dark", "modern", "professional"],
-                    "description": "Presentation template style - general (default, general purpose layouts), classic (traditional layouts), classic-dark (dark theme), modern (business pitch style), professional (corporate presentations)"
+                    "description": "Presentation template style - classic (recommended default, traditional layouts), general (general purpose layouts), classic-dark (dark theme), modern (business pitch style), professional (corporate presentations)"
                   },
                   "export_as": {
                     "type": "string",
@@ -61,14 +61,14 @@
                     "description": "Additional instructions for content generation"
                   }
                 },
-                "required": ["content"]
+                "required": ["prompt"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Presentation created successfully",
+            "description": "Presentation generation started successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -78,13 +78,25 @@
                       "type": "string",
                       "description": "Unique presentation identifier"
                     },
+                    "title": {
+                      "type": "string", 
+                      "description": "Generated presentation title"
+                    },
+                    "outline": {
+                      "type": "string",
+                      "description": "Brief outline or status of the presentation"
+                    },
+                    "edit_url": {
+                      "type": "string",
+                      "description": "Complete URL for online presentation editing and viewing"
+                    },
                     "path": {
                       "type": "string",
-                      "description": "Download URL for the presentation file"
+                      "description": "Direct access URL to the presentation"
                     },
-                    "edit_path": {
+                    "message": {
                       "type": "string",
-                      "description": "URL for online editing (add domain prefix: https://ppt.samsoncj.xyz)"
+                      "description": "Detailed status message with instructions for the user"
                     }
                   }
                 }

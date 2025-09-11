@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.v2.markdown_ppt_request import (
     MarkdownToPPTRequest, 
     MarkdownToPPTResponse,
-    ParsedMarkdownOutline
+    ParsedMarkdownOutline,
+    ParsedSlideOutline
 )
 from models.presentation_outline_model import (
     PresentationOutlineModel, 
@@ -52,6 +53,9 @@ async def generate_ppt_from_markdown(
     start_time = time.time()
     
     try:
+        # 🚀 V2 API - UPDATED VERSION 2.0 🚀
+        print("🚀 V2 API - UPDATED VERSION 2.0 - Starting markdown to PPT generation...")
+        
         # 1. 获取模板布局信息（先获取，用于智能匹配）
         print("Step 1: Getting template layout...")
         layout_model = await get_layout_by_name(request.template)
@@ -208,15 +212,25 @@ async def _generate_presentation_v2(
             request.language
         )
         
-        # 创建幻灯片记录
-        slide = SlideModel(
-            presentation=presentation_id,
-            layout_group=request.template,
-            layout=selected_layout.id,
-            index=slide_number - 1,
-            speaker_note=slide_content.get("__speaker_note__", ""),
-            content=slide_content
-        )
+        # 创建幻灯片记录 - 明确传递所有必需参数
+        slide_data = {
+            "presentation": presentation_id,
+            "layout_group": request.template,
+            "layout": selected_layout.id, 
+            "index": slide_number - 1,
+            "speaker_note": slide_content.get("__speaker_note__", ""),
+            "content": slide_content
+        }
+        
+        print(f"🔧 Creating slide {slide_number} with data: {slide_data}")
+        slide = SlideModel(**slide_data)
+        
+        # 验证创建后的字段值
+        print(f"✅ Slide {slide_number} created successfully:")
+        print(f"   presentation: {slide.presentation}")
+        print(f"   layout_group: {slide.layout_group}")  
+        print(f"   layout: {slide.layout}")
+        print(f"   index: {slide.index}")
         
         # 在数据库操作前检查字段
         print(f"Before database operations - slide {slide_number}:")
@@ -225,8 +239,8 @@ async def _generate_presentation_v2(
         print(f"  layout: {slide.layout} ({type(slide.layout)})")
         print(f"  index: {slide.index} ({type(slide.index)})")
         
-        # V2专用：简化的资源处理（不生成图片，使用占位符）
-        process_slide_add_placeholder_assets(slide)
+        # V2专用：简化的资源处理（暂时跳过，直接使用基础内容）
+        # process_slide_add_placeholder_assets(slide)  # 暂时注释，可能导致字段被清空
         
         # 在process_slide_add_placeholder_assets后再次检查
         print(f"After process_slide_add_placeholder_assets - slide {slide_number}:")

@@ -1,0 +1,161 @@
+# 苹果iPhone 17系列新机选购指南
+# 0. 封面页
+
+## 苹果iPhone 17系列新机选购指南
+
+### 探索创新，选择最适合您的iPhone
+![](https://private-us-east-1.manuscdn.com/sessionFile/EdmLDGoBnHwdjbhi8YqxVk/sandbox/slides_resource_is1s9z48qctfc2kq347jx-0517f971-e2b-prod-aws_1757575765540_na1fn_L2hvbWUvdWJ1bnR1L3VwbG9hZC9zZWFyY2hfaW1hZ2VzL2RYR212OEJPMmRrNg.jpg?x-oss-process=image/resize,w_1560,h_1560/format,webp&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvRWRtTERHb0JuSHdkamJoaThZcXhWay9zYW5kYm94L3NsaWRlc19yZXNvdXJjZV9pczFzOXo0OHFjdGZjMmtxMzQ3angtMDUxN2Y5NzEtZTJiLXByb2QtYXdzXzE3NTc1NzU3NjU1NDBfbmExZm5fTDJodmJXVXZkV0oxYm5SMUwzVndiRzloWkM5elpXRnlZMmhmYVcxaFoyVnpMMlJZUjIxMk9FSlBNbVJyTmcuanBnP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLHdfMTU2MCxoXzE1NjAvZm9ybWF0LHdlYnAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=qSzBCN0tf8WKs9wiSXKZfoJ2ZH19HtzKmYJO~dpHWXM1feYfuD7qTSzVhcWI1zMJROy1rT4mwqf-nZUq2C8~cKSbLjUdyJOK1IrzK~4vCCvhGkdZ06Za3UTBfoCvnSMgv91RZN3u9PFKe82xnRRXZomlmWUGm2Zcmhrp76bF3ggU3-MMcCcrV~Zorx0gvljwBlrQG~ky6G8rHqawaCSObQKfHZE9vaF9q3~qPksuXsg~QDovvFVE5f99njFWeko9fD550Ak515q3XOLB4KnTHR3SxU~tN351Y3ND8ohkOsHYnyiXPLcrQz5BGYmDSQ883cZ~67tEukIdJRID1C48oQ__)
+
+  
+
+# 1.引言：iPhone 17系列概览
+
+## 全新设计，突破性能，卓越体验
+
+苹果于2025年9月9日正式发布了全新iPhone 17系列，包括iPhone 17、iPhone Air、iPhone 17 Pro和iPhone 17 Pro Max四款产品。预购将于9月12日开始，9月19日正式发售。
+
+本指南旨在帮助您了解各型号之间的差异，根据您的需求和预算做出最明智的选择。
+
+全新A19/A19 Pro芯片，性能大幅提升
+
+全新超薄iPhone Air，重新定义轻薄体验
+
+升级的摄像系统，提供更专业的拍摄能力
+
+更大的显示屏和更长的电池续航
+
+![iPhone 17系列发布会](https://private-us-east-1.manuscdn.com/sessionFile/EdmLDGoBnHwdjbhi8YqxVk/sandbox/slides_resource_is1s9z48qctfc2kq347jx-0517f971-e2b-prod-aws_1757575822447_na1fn_L2hvbWUvdWJ1bnR1L3VwbG9hZC9zZWFyY2hfaW1hZ2VzL1d6N3lEaTlyUlg3Vg.jpg?x-oss-process=image/resize,w_1560,h_1560/format,webp&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvRWRtTERHb0JuSHdkamJoaThZcXhWay9zYW5kYm94L3NsaWRlc19yZXNvdXJjZV9pczFzOXo0OHFjdGZjMmtxMzQ3angtMDUxN2Y5NzEtZTJiLXByb2QtYXdzXzE3NTc1NzU4MjI0NDdfbmExZm5fTDJodmJXVXZkV0oxYm5SMUwzVndiRzloWkM5elpXRnlZMmhmYVcxaFoyVnpMMWQ2TjNsRWFUbHlVbGczVmcuanBnP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLHdfMTU2MCxoXzE1NjAvZm9ybWF0LHdlYnAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=JNlyDxYQuXWioEQQmsbYnfjvw6EHqQspcc6El8EX~mmATh2akpLOM1xpV9LxK4CEsfZ8PSPXmWsmGg1z9A-irTY75pkI0sTkSvsNjIJTyYUTYxVTZx8BLmti6e--PMFld~EmxRuLbnXHL2MWIU5U5MTE00egl70Lo5w5p1sGdjF9C5GRekIxrk6IItdSUF-SCo58AgLVQKFkdc1LLoLmPSX-Ku-PXQmQl-H8g9Z2Hg97hdVCdpXnqfsGjCV21-lG60mPjLWrhlKzv1HrBagjJWjHedT~ayM1AoHn6ipP~Cg9vpnRXXmvGvzj6QcqWaDT~vxkU2APu0wdnyW0xOpqyg__)
+
+# 2. 型号概览：四大系列产品
+
+## iPhone 17
+
+### 基础款，全能体验
+
+6.3英寸显示屏
+
+A19芯片
+
+双摄像头系统
+
+适合：追求性价比的普通用户
+
+## iPhone Air
+
+### 超薄设计，轻盈体验
+
+6.1英寸显示屏
+
+A19 Pro芯片
+
+超薄机身设计
+
+适合：追求轻薄便携的时尚用户
+
+## iPhone 17 Pro
+
+### 专业级功能，创作利器
+
+6.3英寸ProMotion屏幕
+
+A19 Pro芯片
+
+三摄像头专业系统
+
+适合：专业摄影师和内容创作者
+
+## iPhone 17 Pro Max
+
+### 顶级配置，极致体验
+
+6.9英寸ProMotion屏幕
+
+A19 Pro芯片增强版
+
+顶级摄像系统
+
+适合：追求极致体验的高端用户
+
+![iPhone 17系列产品对比](https://private-us-east-1.manuscdn.com/sessionFile/EdmLDGoBnHwdjbhi8YqxVk/sandbox/slides_resource_is1s9z48qctfc2kq347jx-0517f971-e2b-prod-aws_1757575959853_na1fn_L2hvbWUvdWJ1bnR1L3VwbG9hZC9zZWFyY2hfaW1hZ2VzL0RwZld6ZHB3VU9tYQ.jpg?x-oss-process=image/resize,w_1560,h_1560/format,webp&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvRWRtTERHb0JuSHdkamJoaThZcXhWay9zYW5kYm94L3NsaWRlc19yZXNvdXJjZV9pczFzOXo0OHFjdGZjMmtxMzQ3angtMDUxN2Y5NzEtZTJiLXByb2QtYXdzXzE3NTc1NzU5NTk4NTNfbmExZm5fTDJodmJXVXZkV0oxYm5SMUwzVndiRzloWkM5elpXRnlZMmhmYVcxaFoyVnpMMFJ3WmxkNlpIQjNWVTl0WVEuanBnP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLHdfMTU2MCxoXzE1NjAvZm9ybWF0LHdlYnAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=B9bQ7H3YSxTpFPQJYhR-FrBUz2rzL~Td-vBAROYoad9UU49wwwTxDtB2InaQNc8so76yT9FQ8s9LgknZdoKefXms5hkHFIV579WflBsBHZ0hBzVs4Q29Z6eFrlCH3ztwGZWHwkGho6tQqpYvUhAPKW5yg~z7RHioaP5kdzXnCPTE8xaThqmdAeZGsU6XuXpyggXeOSvg4vbVwSTs5fLIZAZqG835k0aa7cildUW-omfcIeMoBKieAmNBrYUXxdxCHGDHU4Dh~yYEp3JKoXF8CBkbXHN5CJdx~H2fPD9XIOafGkwc0v02anEo9nGnBbqxxPkqvPzIqhmmElPuhOVcsQ__)
+  
+
+# 3.核心功能对比：性能
+
+## A19/A19 Pro芯片性能提升
+
+iPhone 17系列搭载全新A19和A19 Pro芯片，相比上一代性能提升显著：
+
+A19芯片：标准版iPhone 17搭载，CPU性能提升20%，GPU性能提升25%
+
+A19 Pro芯片：Pro系列和Air搭载，CPU性能提升30%，GPU性能提升40%
+
+全新神经网络引擎，AI处理速度提升3倍
+
+更高效的内存管理，多任务处理更流畅
+
+先进散热系统，持续高性能表现
+
+iPhone Air特别采用了优化版A19 Pro芯片，在超薄机身中实现了卓越性能与散热平衡。
+
+![A19芯片](https://private-us-east-1.manuscdn.com/sessionFile/EdmLDGoBnHwdjbhi8YqxVk/sandbox/slides_resource_is1s9z48qctfc2kq347jx-0517f971-e2b-prod-aws_1757575996147_na1fn_L2hvbWUvdWJ1bnR1L3VwbG9hZC9zZWFyY2hfaW1hZ2VzLzZkQXh1eHFIaUJuMA.jpg?x-oss-process=image/resize,w_1560,h_1560/format,webp&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvRWRtTERHb0JuSHdkamJoaThZcXhWay9zYW5kYm94L3NsaWRlc19yZXNvdXJjZV9pczFzOXo0OHFjdGZjMmtxMzQ3angtMDUxN2Y5NzEtZTJiLXByb2QtYXdzXzE3NTc1NzU5OTYxNDdfbmExZm5fTDJodmJXVXZkV0oxYm5SMUwzVndiRzloWkM5elpXRnlZMmhmYVcxaFoyVnpMelprUVhoMWVIRklhVUp1TUEuanBnP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLHdfMTU2MCxoXzE1NjAvZm9ybWF0LHdlYnAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=rNe9Qn2VsNL3l~kUdzRUoPCXt9oj6zIRhQMo3k84LlUMv9zXYGTRGfEUo0wPxjFKvQxIJyJf5C3WHda4G4yhtNCKRBQSTlIbAnkZxVgljMxi~hI51IiHuRLHYiWYvgjPqNvqFtXveH4y~bjl2Ap9oVlZKgzzK17seJjbVUR8Me6LJMJ4miMIll7vgNqN6Fr7KLfgDBu0tiH8LpYXqnt~ns9ALzubDVDSuD3wkBlsEliON-J4OIUxX88hhP31Zpczz3vDKqc4l1g8Er9tbggipQPM8GPNgaLw01ApviiuUQMZTuH6zDIbvuIu7WbJs6Y~-fMeJDri1p9Czp5-A59gGA__)
+
+# 4.核心功能对比：摄像头
+
+## 影像系统升级，新功能介绍
+
+iPhone 17系列带来了全面升级的摄像系统，提供更专业的拍摄体验：
+
+主摄像头
+
+iPhone 17/Air: 48MP, f/1.6光圈  
+iPhone 17 Pro/Pro Max: 48MP, f/1.4光圈，全像素对焦
+
+超广角
+
+iPhone 17/Air: 12MP, f/2.4光圈  
+iPhone 17 Pro/Pro Max: 48MP, f/2.2光圈，自动对焦
+
+长焦镜头
+
+iPhone 17 Pro: 12MP, 3倍光学变焦  
+iPhone 17 Pro Max: 12MP, 5倍光学变焦
+
+视频录制
+
+所有机型: 4K@60fps HDR视频  
+Pro系列: 8K@30fps视频录制，专业级色彩分级
+
+![iPhone 17摄像头模块](https://private-us-east-1.manuscdn.com/sessionFile/EdmLDGoBnHwdjbhi8YqxVk/sandbox/slides_resource_is1s9z48qctfc2kq347jx-0517f971-e2b-prod-aws_1757576032239_na1fn_L2hvbWUvdWJ1bnR1L3VwbG9hZC9zZWFyY2hfaW1hZ2VzL0lXZjUzTjRneGFuRg.jpg?x-oss-process=image/resize,w_1560,h_1560/format,webp&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvRWRtTERHb0JuSHdkamJoaThZcXhWay9zYW5kYm94L3NsaWRlc19yZXNvdXJjZV9pczFzOXo0OHFjdGZjMmtxMzQ3angtMDUxN2Y5NzEtZTJiLXByb2QtYXdzXzE3NTc1NzYwMzIyMzlfbmExZm5fTDJodmJXVXZkV0oxYm5SMUwzVndiRzloWkM5elpXRnlZMmhmYVcxaFoyVnpMMGxYWmpVelRqUm5lR0Z1UmcuanBnP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLHdfMTU2MCxoXzE1NjAvZm9ybWF0LHdlYnAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=RbylEzzC6qyoma1dhWpFdT5igpXKYnjQXLyz8TyveUaffMI-ZjTe-n-Qv1-kJxUnTICyk16SI0NwA6WCOrPKqPa1wCFwgGxsErT-kPmhMLtwdZL3W3wxANRnbDeaKU6un9al5pVe3QH2~J4G4uHD4-rM8BLjkJaG2oWFXGx771QJVUuNBy1uhSE2ftswsFzlJ4e8lxJACwqv334G0GZymnmH~nJSAxOwLcoMPE38wS2esaVbDYjgTqi0ujveqaD7bj64xjv-Xsq52XpXc8NYL8VDSrUzqXLHDcEevTeVuEFMNO01FO8LQpvOem66iucYnG3Qzc3LVh2xsryNTYiOPw__)
+
+|摄像功能|iPhone 17|iPhone Air|17 Pro|17 Pro Max|
+|---|---|---|---|---|
+|夜间模式|✅|✅|✅|✅|
+|微距摄影|||✅|✅|
+|ProRAW||✅|✅|✅|
+|8K视频|||✅|✅|
+|电影模式|✅|✅|✅|✅|
+  
+  
+# 5.总结与展望
+
+## iPhone 17系列带来了全面的创新与升级，为用户提供更出色的体验
+
+![iPhone Air创新设计](https://manus.im/home/ubuntu/upload/search_images/AfAKW9lpQX7r.jpg)
+
+强劲性能
+
+A19/A19 Pro芯片带来前所未有的性能
+
+专业摄影
+
+升级的摄像系统，捕捉精彩瞬间
+
+创新设计
+
+全新iPhone Air重新定义轻薄体验
+
+持久续航
+
+更长的电池续航，满足全天需求
+
+感谢您的关注，祝您选购愉快！

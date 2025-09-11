@@ -91,23 +91,47 @@ class MarkdownOutlineParser:
         return "无标题演示文稿"
     
     def _split_into_slides(self, markdown_content: str) -> List[str]:
-        """将Markdown内容按幻灯片分割"""
+        """将Markdown内容按PPT页面结构分割
         
-        # 按## 或更高级别标题分割
-        sections = re.split(r'\n(?=##\s)', markdown_content)
+        规则：
+        1. 第一个一级标题(# )作为PPT总标题，不算作幻灯片
+        2. 后续每个一级标题(# )代表一张新的幻灯片
+        3. 每张幻灯片包含该一级标题下的所有内容，直到下一个一级标题
+        """
         
-        # 过滤掉空白段落和只有主标题的段落
+        lines = markdown_content.strip().split('\n')
         slide_sections = []
-        for section in sections:
-            section = section.strip()
-            if section and not section.startswith('# '):
-                slide_sections.append(section)
-            elif section and section.startswith('# ') and '\n' in section:
-                # 如果主标题段落还有其他内容，保留除标题外的部分
-                content_after_title = '\n'.join(section.split('\n')[1:]).strip()
-                if content_after_title:
-                    slide_sections.append(content_after_title)
+        current_slide = []
+        found_first_title = False
         
+        for line in lines:
+            # 检测一级标题
+            if line.strip().startswith('# ') and not line.strip().startswith('## '):
+                if not found_first_title:
+                    # 跳过第一个一级标题（PPT总标题）
+                    found_first_title = True
+                    continue
+                else:
+                    # 保存上一张幻灯片内容
+                    if current_slide:
+                        slide_content = '\n'.join(current_slide).strip()
+                        if slide_content:
+                            slide_sections.append(slide_content)
+                    
+                    # 开始新的幻灯片
+                    current_slide = [line]
+            else:
+                # 如果已经找到第一个标题，开始收集幻灯片内容
+                if found_first_title:
+                    current_slide.append(line)
+        
+        # 添加最后一张幻灯片
+        if current_slide:
+            slide_content = '\n'.join(current_slide).strip()
+            if slide_content:
+                slide_sections.append(slide_content)
+        
+        print(f"📄 按PPT结构解析：总标题后找到 {len(slide_sections)} 张幻灯片")
         return slide_sections
     
     def _parse_slide_section(self, section: str, index: int, template: str, layout_model=None) -> ParsedSlideOutline:
@@ -115,14 +139,20 @@ class MarkdownOutlineParser:
         
         lines = section.strip().split('\n')
         
-        # 提取标题（第一行## 标题）
-        title = "幻灯片 " + str(index + 1)
+        # 提取标题（第一行应该是一级标题）
+        title = f"幻灯片 {index + 1}"
         for line in lines:
             line = line.strip()
-            if line.startswith('## '):
+            if line.startswith('# ') and not line.startswith('## '):
+                # 提取一级标题
+                title = line[2:].strip()
+                break
+            elif line.startswith('## '):
+                # 如果没有一级标题，使用二级标题
                 title = line[3:].strip()
                 break
             elif line.startswith('### '):
+                # 使用三级标题作为备选
                 title = line[4:].strip()
                 break
         

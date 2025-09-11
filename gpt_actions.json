@@ -14,8 +14,8 @@
     "/api/v1/ppt/gpts/generate": {
       "post": {
         "operationId": "generatePresentation",
-        "summary": "Generate PowerPoint presentation with streaming",
-        "description": "Create a complete presentation from topic description with real-time generation. This endpoint will generate an outline, prepare layouts, and stream the complete presentation creation process. Returns immediate access link for viewing progress and final results.",
+        "summary": "Generate PowerPoint presentation",
+        "description": "IMPORTANT: Always ask users to confirm presentation details before calling this API. Ask for: 1) Topic/content details, 2) Number of slides (default: 8), 3) Language (default: Chinese), 4) Template style (default: classic). Only call this API after getting user confirmation.",
         "requestBody": {
           "required": true,
           "content": {
@@ -25,40 +25,40 @@
                 "properties": {
                   "prompt": {
                     "type": "string",
-                    "description": "Detailed description of the presentation topic. The AI will automatically generate an outline and structure. Be specific about the topic and any key points to cover."
+                    "description": "Detailed description of the presentation topic and content requirements"
                   },
                   "n_slides": {
                     "type": "integer",
                     "default": 8,
                     "minimum": 3,
                     "maximum": 20,
-                    "description": "Number of slides to generate"
+                    "description": "Number of slides to generate (default: 8)"
                   },
                   "language": {
                     "type": "string",
                     "default": "Chinese",
                     "enum": ["English", "Chinese"],
-                    "description": "Presentation language"
+                    "description": "Presentation language (default: Chinese)"
                   },
                   "template": {
                     "type": "string",
                     "default": "classic",
                     "enum": ["general", "classic", "classic-dark", "modern", "professional"],
-                    "description": "Presentation template style - classic (recommended default, traditional layouts), general (general purpose layouts), classic-dark (dark theme), modern (business pitch style), professional (corporate presentations)"
+                    "description": "Template options: classic (traditional, recommended default), general (versatile layouts), classic-dark (dark theme), modern (business style), professional (corporate style)"
                   },
                   "export_as": {
                     "type": "string",
                     "default": "pptx",
                     "enum": ["pptx", "pdf"],
-                    "description": "Export format"
+                    "description": "Export format (default: pptx)"
                   },
                   "tone": {
                     "type": "string",
-                    "description": "Presentation tone (professional, casual, academic, etc.)"
+                    "description": "Optional: presentation tone (professional, casual, academic, etc.)"
                   },
                   "instructions": {
                     "type": "string",
-                    "description": "Additional instructions for content generation"
+                    "description": "Optional: additional specific requirements or instructions"
                   }
                 },
                 "required": ["prompt"]
@@ -68,7 +68,7 @@
         },
         "responses": {
           "200": {
-            "description": "Presentation generation started successfully",
+            "description": "Presentation generation completed successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -79,12 +79,12 @@
                       "description": "Unique presentation identifier"
                     },
                     "title": {
-                      "type": "string", 
+                      "type": "string",
                       "description": "Generated presentation title"
                     },
                     "outline": {
                       "type": "string",
-                      "description": "Brief outline or status of the presentation"
+                      "description": "Brief outline of the presentation content"
                     },
                     "edit_url": {
                       "type": "string",
@@ -96,7 +96,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "description": "Detailed status message with instructions for the user"
+                      "description": "Detailed status message with next steps for the user"
                     }
                   }
                 }

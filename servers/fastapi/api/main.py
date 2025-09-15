@@ -4,6 +4,7 @@ from api.lifespan import app_lifespan
 from api.middlewares import UserConfigEnvUpdateMiddleware
 from api.v1.ppt.router import API_V1_PPT_ROUTER
 from api.v2.router import V2_ROUTER
+from api.v3.router import V3_ROUTER
 
 
 app = FastAPI(lifespan=app_lifespan)
@@ -12,6 +13,7 @@ app = FastAPI(lifespan=app_lifespan)
 # Routers
 app.include_router(API_V1_PPT_ROUTER)
 app.include_router(V2_ROUTER)
+app.include_router(V3_ROUTER)
 
 # Middlewares
 origins = ["*"]

@@ -13,7 +13,7 @@ class EnhancedMarkdownParser:
     
     def __init__(self):
         # 继承V2的解析能力
-        from ...v2.services.markdown_parser import MarkdownOutlineParser
+        from services.v2.markdown_parser import MarkdownOutlineParser
         self.base_parser = MarkdownOutlineParser()
         
         # 增强的内容类型识别

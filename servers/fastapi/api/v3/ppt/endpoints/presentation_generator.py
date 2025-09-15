@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ...models.v3_requests import V3PresentationRequest, V3StepRequest
 from ...models.v3_responses import V3PresentationResponse, V3StepResponse
 from ...services.enhanced_agent import V3EnhancedAgent
-from ....services.database import get_async_session
+from services.database import get_async_session
 
 V3_PRESENTATION_ROUTER = APIRouter(prefix="/presentation", tags=["V3 Presentation"])
 

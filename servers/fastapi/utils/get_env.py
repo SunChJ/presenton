@@ -69,6 +69,14 @@ def get_custom_model_env():
     return os.getenv("CUSTOM_MODEL")
 
 
+def get_openrouter_api_key_env():
+    return os.getenv("OPENROUTER_API_KEY")
+
+
+def get_openrouter_model_env():
+    return os.getenv("OPENROUTER_MODEL")
+
+
 def get_pexels_api_key_env():
     return os.getenv("PEXELS_API_KEY")
 

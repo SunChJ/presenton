@@ -13,6 +13,8 @@ from utils.get_env import (
     get_llm_provider_env,
     get_ollama_model_env,
     get_openai_model_env,
+    get_openrouter_api_key_env,
+    get_openrouter_model_env,
 )
 
 
@@ -22,7 +24,7 @@ def get_llm_provider():
     except:
         raise HTTPException(
             status_code=500,
-            detail=f"Invalid LLM provider. Please select one of: openai, google, anthropic, ollama, custom",
+            detail=f"Invalid LLM provider. Please select one of: openai, google, anthropic, ollama, custom, openrouter",
         )
 
 
@@ -46,6 +48,10 @@ def is_custom_llm_selected():
     return get_llm_provider() == LLMProvider.CUSTOM
 
 
+def is_openrouter_selected():
+    return get_llm_provider() == LLMProvider.OPENROUTER
+
+
 def get_model():
     selected_llm = get_llm_provider()
     if selected_llm == LLMProvider.OPENAI:
@@ -58,8 +64,10 @@ def get_model():
         return get_ollama_model_env()
     elif selected_llm == LLMProvider.CUSTOM:
         return get_custom_model_env()
+    elif selected_llm == LLMProvider.OPENROUTER:
+        return get_openrouter_model_env() or "anthropic/claude-3-haiku:beta"
     else:
         raise HTTPException(
             status_code=500,
-            detail=f"Invalid LLM provider. Please select one of: openai, google, anthropic, ollama, custom",
+            detail=f"Invalid LLM provider. Please select one of: openai, google, anthropic, ollama, custom, openrouter",
         )

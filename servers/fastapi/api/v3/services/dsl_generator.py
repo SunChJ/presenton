@@ -4,7 +4,7 @@ V3 DSL生成器服务
 """
 
 import time
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from ..models.dsl_models import (
     PresentationDSL, SlideDSL, ComponentModel, LayoutModel, StyleModel,
     DSLGenerationRequest, DSLGenerationResponse

@@ -49,6 +49,7 @@ from utils.get_env import (
     get_google_api_key_env,
     get_ollama_url_env,
     get_openai_api_key_env,
+    get_openrouter_api_key_env,
     get_tool_calls_env,
     get_web_grounding_env,
 )
@@ -78,6 +79,7 @@ class LLMClient:
         if (
             self.llm_provider == LLMProvider.OLLAMA
             or self.llm_provider == LLMProvider.CUSTOM
+            or self.llm_provider == LLMProvider.OPENROUTER
         ):
             return False
         return parse_bool_or_none(get_web_grounding_env()) or False
@@ -99,10 +101,12 @@ class LLMClient:
                 return self._get_ollama_client()
             case LLMProvider.CUSTOM:
                 return self._get_custom_client()
+            case LLMProvider.OPENROUTER:
+                return self._get_openrouter_client()
             case _:
                 raise HTTPException(
                     status_code=400,
-                    detail="LLM Provider must be either openai, google, anthropic, ollama, or custom",
+                    detail="LLM Provider must be either openai, google, anthropic, ollama, custom, or openrouter",
                 )
 
     def _get_openai_client(self):
@@ -144,6 +148,32 @@ class LLMClient:
         return AsyncOpenAI(
             base_url=get_custom_llm_url_env(),
             api_key=get_custom_llm_api_key_env() or "null",
+        )
+
+    def _get_openrouter_client(self):
+        if not get_openrouter_api_key_env():
+            raise HTTPException(
+                status_code=400,
+                detail="OpenRouter API Key is not set",
+            )
+        return AsyncOpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=get_openrouter_api_key_env(),
+        )
+
+    async def _generate_openrouter(
+        self,
+        model: str,
+        messages: List[LLMMessage],
+        max_tokens: Optional[int] = None,
+        tools: Optional[List[dict]] = None,
+    ) -> str | None:
+        # OpenRouter uses OpenAI-compatible API, so we can reuse the OpenAI generation logic
+        return await self._generate_openai(
+            model=model,
+            messages=messages,
+            max_tokens=max_tokens,
+            tools=tools,
         )
 
     # ? Prompts
@@ -435,6 +465,13 @@ class LLMClient:
             case LLMProvider.CUSTOM:
                 content = await self._generate_custom(
                     model=model, messages=messages, max_tokens=max_tokens
+                )
+            case LLMProvider.OPENROUTER:
+                content = await self._generate_openrouter(
+                    model=model,
+                    messages=messages,
+                    max_tokens=max_tokens,
+                    tools=parsed_tools,
                 )
         if content is None:
             raise HTTPException(
@@ -765,6 +802,27 @@ class LLMClient:
             depth=depth,
         )
 
+    async def _generate_openrouter_structured(
+        self,
+        model: str,
+        messages: List[LLMMessage],
+        response_format: dict,
+        strict: bool = False,
+        tools: Optional[List[dict]] = None,
+        max_tokens: Optional[int] = None,
+        depth: int = 0,
+    ):
+        # OpenRouter uses OpenAI-compatible API, so we can reuse the OpenAI structured generation logic
+        return await self._generate_openai_structured(
+            model=model,
+            messages=messages,
+            response_format=response_format,
+            strict=strict,
+            tools=tools,
+            max_tokens=max_tokens,
+            depth=depth,
+        )
+
     async def generate_structured(
         self,
         model: str,
@@ -817,6 +875,15 @@ class LLMClient:
                     messages=messages,
                     response_format=response_format,
                     strict=strict,
+                    max_tokens=max_tokens,
+                )
+            case LLMProvider.OPENROUTER:
+                content = await self._generate_openrouter_structured(
+                    model=model,
+                    messages=messages,
+                    response_format=response_format,
+                    strict=strict,
+                    tools=parsed_tools,
                     max_tokens=max_tokens,
                 )
         if content is None:
@@ -1087,6 +1154,23 @@ class LLMClient:
             depth=depth,
         )
 
+    def _stream_openrouter(
+        self,
+        model: str,
+        messages: List[LLMMessage],
+        max_tokens: Optional[int] = None,
+        tools: Optional[List[dict]] = None,
+        depth: int = 0,
+    ):
+        # OpenRouter uses OpenAI-compatible API, so we can reuse the OpenAI streaming logic
+        return self._stream_openai(
+            model=model,
+            messages=messages,
+            max_tokens=max_tokens,
+            tools=tools,
+            depth=depth,
+        )
+
     def stream(
         self,
         model: str,
@@ -1125,6 +1209,13 @@ class LLMClient:
             case LLMProvider.CUSTOM:
                 return self._stream_custom(
                     model=model, messages=messages, max_tokens=max_tokens
+                )
+            case LLMProvider.OPENROUTER:
+                return self._stream_openrouter(
+                    model=model,
+                    messages=messages,
+                    max_tokens=max_tokens,
+                    tools=parsed_tools,
                 )
 
     # ? Stream Structured Content
@@ -1509,6 +1600,27 @@ class LLMClient:
             depth=depth,
         )
 
+    def _stream_openrouter_structured(
+        self,
+        model: str,
+        messages: List[LLMMessage],
+        response_format: dict,
+        strict: bool = False,
+        tools: Optional[List[dict]] = None,
+        max_tokens: Optional[int] = None,
+        depth: int = 0,
+    ):
+        # OpenRouter uses OpenAI-compatible API, so we can reuse the OpenAI structured streaming logic
+        return self._stream_openai_structured(
+            model=model,
+            messages=messages,
+            response_format=response_format,
+            strict=strict,
+            tools=tools,
+            max_tokens=max_tokens,
+            depth=depth,
+        )
+
     def stream_structured(
         self,
         model: str,
@@ -1560,6 +1672,15 @@ class LLMClient:
                     messages=messages,
                     response_format=response_format,
                     strict=strict,
+                    max_tokens=max_tokens,
+                )
+            case LLMProvider.OPENROUTER:
+                return self._stream_openrouter_structured(
+                    model=model,
+                    messages=messages,
+                    response_format=response_format,
+                    strict=strict,
+                    tools=parsed_tools,
                     max_tokens=max_tokens,
                 )
 

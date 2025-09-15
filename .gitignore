@@ -36,3 +36,13 @@ Thumbs.db
 *.log
 *.tmp
 temp/
+
+# Test reports and generated files
+*_report_*.json
+v3_completeness_report_*.json
+exports/
+test_results/
+
+# Demo and test files (optional - uncomment if needed)
+# demo_*.py
+# test_*.py

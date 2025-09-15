@@ -7,7 +7,7 @@ import asyncio
 import time
 from typing import Dict, Any, List, Optional
 from ..models.v3_responses import V3HTMLResponse
-from ..models.dsl_models import PresentationDSL, SlideDSL, ComponentModel, LayoutModel, StyleModel
+from ..models.dsl_models import PresentationDSL, SlideDSL, ComponentModel, LayoutModel, StyleModel, TypographyModel
 
 
 class HTMLDesignExpert:
@@ -371,9 +371,15 @@ class HTMLDesignExpert:
         return StyleModel(
             theme=template,
             colors=theme["colors"],
-            typography=theme["typography"],
-            spacing={"small": "0.5rem", "medium": "1rem", "large": "2rem"},
-            borders={"radius": "0.5rem", "width": "1px"},
+            typography=TypographyModel(
+                font_family=theme["typography"]["font_family"],
+                font_size=16.0,
+                font_weight="normal",
+                line_height=theme["typography"]["line_height"],
+                letter_spacing=0.0
+            ),
+            spacing={"small": 8.0, "medium": 16.0, "large": 32.0},
+            borders={"radius": 8.0, "width": 1.0},
             shadows={"small": "0 1px 3px rgba(0,0,0,0.1)"}
         )
     

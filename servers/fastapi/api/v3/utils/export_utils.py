@@ -12,9 +12,10 @@ from uuid import UUID
 
 class HTMLToPDFConverter:
     """HTML到PDF转换器"""
-    
+
     def __init__(self):
-        self.output_dir = "/app_data/exports"
+        # 使用相对路径，创建本地导出目录
+        self.output_dir = "exports"
         os.makedirs(self.output_dir, exist_ok=True)
     
     async def convert(self, html_data: Dict[str, Any], presentation_id: UUID) -> str:
@@ -33,14 +34,15 @@ class HTMLToPDFConverter:
         # 这里应该实现实际的PDF生成逻辑
         # 目前返回模拟路径
         
-        return f"/app_data/exports/{pdf_filename}"
+        return f"exports/{pdf_filename}"
 
 
 class HTMLToPPTXConverter:
     """HTML到PPTX转换器"""
-    
+
     def __init__(self):
-        self.output_dir = "/app_data/exports"
+        # 使用相对路径，创建本地导出目录
+        self.output_dir = "exports"
         os.makedirs(self.output_dir, exist_ok=True)
     
     async def convert(self, html_data: Dict[str, Any], presentation_id: UUID) -> str:
@@ -59,4 +61,4 @@ class HTMLToPPTXConverter:
         # 这里应该实现实际的PPTX生成逻辑
         # 目前返回模拟路径
         
-        return f"/app_data/exports/{pptx_filename}"
+        return f"exports/{pptx_filename}"
